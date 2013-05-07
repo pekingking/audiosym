@@ -81,7 +81,7 @@ def main():
                         print "symlinks created"
                         print "thank you for using audiosym"
                 else:
-                    print "the following directory already exists {}/{}".format(.rstrip('/'), cleanTitle(bookDetails["title"]))
+                    print "the following directory already exists {}/{}".format(args.destination.rstrip('/'), cleanTitle(bookDetails["title"]))
                     return
 
 
