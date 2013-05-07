@@ -22,9 +22,9 @@ def main():
         print cleanTitle("Harry's big adventure (1asd)")
     else:
         #print getSourceFileList(args.source)
-        print "\nsearching for {}".format(os.path.basename(args.source))
+        print "\nsearching for {}".format(os.path.basename(args.source.rstrip('/')))
         bookIndex = 0
-        bookTitle = os.path.basename(args.source)
+        bookTitle = os.path.basename(args.source.rstrip('/'))
         while True:
             bookDetails = getBookInfo(bookTitle, bookIndex)
             print "Found {} by {} published in {}".format(bookDetails["title"], bookDetails["author"],
