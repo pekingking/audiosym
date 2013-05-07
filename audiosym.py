@@ -76,7 +76,7 @@ def main():
                         os.chdir("{}/{}".format(args.destination.rstrip('/'), cleanTitle(bookDetails["title"])))
                         print "creating symlinks"
                         for index, file in enumerate(sorted(getSourceFileList(args.source))):
-                            os.symlink("{}/{}/{}".format(args.destination.rstrip('/'), cleanTitle(bookDetails["title"]), file),
+                            os.symlink("{}/{}".format(args.source.rstrip('/'), file),
                             "{}/{}/{}.%03d{}".format(args.destination.rstrip('/'), cleanTitle(bookDetails["title"]), cleanTitle(bookDetails["title"]), os.path.splitext(file)[1]) % (index + 1))
                         print "symlinks created"
                         print "thank you for using audiosym"
