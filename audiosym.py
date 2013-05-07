@@ -57,7 +57,7 @@ def main():
             print "\n"
             print "planning on creating the following directory and symlinks:"
             print "source:\t\t\t{}".format(args.source)
-            print "destination:\t{}/{}".format(args.destination, cleanTitle(bookDetails["title"]))
+            print "destination:\t{}/{}".format(args.destination.rstrip('/'), cleanTitle(bookDetails["title"]))
             print ""
             print "planning on creating the following symlinks"
             print "symlink -> file"
@@ -68,20 +68,20 @@ def main():
             proceed = raw_input("Do you want to continue? yes/[no]: ")
             if proceed == "yes":
                 #make sure we are not overwriting something
-                if not os.path.exists("{}/{}".format(args.destination, cleanTitle(bookDetails["title"]))):
+                if not os.path.exists("{}/{}".format(args.destination.rstrip('/'), cleanTitle(bookDetails["title"]))):
                     print "creating directory"
-                    os.mkdir("{}/{}".format(args.destination, cleanTitle(bookDetails["title"])))
-                    if os.path.exists("{}/{}".format(args.destination, cleanTitle(bookDetails["title"]))):
+                    os.mkdir("{}/{}".format(args.destination.rstrip('/'), cleanTitle(bookDetails["title"])))
+                    if os.path.exists("{}/{}".format(args.destination.rstrip('/'), cleanTitle(bookDetails["title"]))):
                         print "directory created"
-                        os.chdir("{}/{}".format(args.destination, cleanTitle(bookDetails["title"])))
+                        os.chdir("{}/{}".format(args.destination.rstrip('/'), cleanTitle(bookDetails["title"])))
                         print "creating symlinks"
                         for index, file in enumerate(getSourceFileList(args.source)):
-                            os.symlink("{}/{}/{}".format(args.destination, cleanTitle(bookDetails["title"]), file),
-                            "{}/{}/{}.%03d{}".format(args.destination, cleanTitle(bookDetails["title"]), cleanTitle(bookDetails["title"]), os.path.splitext(file)[1]) % (index + 1))
+                            os.symlink("{}/{}/{}".format(args.destination.rstrip('/'), cleanTitle(bookDetails["title"]), file),
+                            "{}/{}/{}.%03d{}".format(args.destination.rstrip('/'), cleanTitle(bookDetails["title"]), cleanTitle(bookDetails["title"]), os.path.splitext(file)[1]) % (index + 1))
                         print "symlinks created"
                         print "thank you for using audiosym"
                 else:
-                    print "the following directory already exists {}/{}".format(args.destination, cleanTitle(bookDetails["title"]))
+                    print "the following directory already exists {}/{}".format(.rstrip('/'), cleanTitle(bookDetails["title"]))
                     return
 
 
