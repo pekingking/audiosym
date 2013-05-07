@@ -44,7 +44,7 @@ def main():
                 break
         # we have identified the book on books.google.com so we have (title, author, description, date, thumbnail)
         print "\nidentified the following files"
-        for bookFile in getSourceFileList(args.source):
+        for bookFile in getSourceFileList(args.source).sort():
             print bookFile
         correctOrder = raw_input("did they print out in the correct order? [yes]/no: ")
         #if the files are not in order its going to be a pain in the ass to fix. Do you do one by one?
@@ -61,7 +61,7 @@ def main():
             print ""
             print "planning on creating the following symlinks"
             print "symlink -> file"
-            for index, file in enumerate(getSourceFileList(args.source)):
+            for index, file in enumerate(getSourceFileList(args.source).sort()):
                 print "{}.%03d{} -> {}".format(cleanTitle(bookDetails["title"]), os.path.splitext(file)[1], file) % (
                     index + 1)
         #TODO create the actual directory and symlinks
@@ -75,7 +75,7 @@ def main():
                         print "directory created"
                         os.chdir("{}/{}".format(args.destination.rstrip('/'), cleanTitle(bookDetails["title"])))
                         print "creating symlinks"
-                        for index, file in enumerate(getSourceFileList(args.source)):
+                        for index, file in enumerate(getSourceFileList(args.source).sort()):
                             os.symlink("{}/{}/{}".format(args.destination.rstrip('/'), cleanTitle(bookDetails["title"]), file),
                             "{}/{}/{}.%03d{}".format(args.destination.rstrip('/'), cleanTitle(bookDetails["title"]), cleanTitle(bookDetails["title"]), os.path.splitext(file)[1]) % (index + 1))
                         print "symlinks created"
