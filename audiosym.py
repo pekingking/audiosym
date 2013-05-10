@@ -2,6 +2,7 @@ import argparse
 import os
 import glob
 import re
+import fnmatch
 
 import requests
 
@@ -102,8 +103,11 @@ def getSourceFileList(directory):
     fileList = []
     if os.path.exists(directory):
         os.chdir(directory)
-        for files in glob.glob("*.mp3"):
-            fileList.append(files)
+        for dirname, dirnames, filenames in os.walk("./"):
+            # print path to all filenames.
+            for filename in filenames:
+                if fnmatch.fnmatch(os.path.join(dirname, filename).lstrip("./"), "*.mp3"):
+                    fileList.append(os.path.join(dirname, filename).lstrip("./"))
     return fileList
 
 
