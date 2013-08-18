@@ -48,12 +48,27 @@ def findBookDetails(source):
         bookDetails = getBookInfo(bookTitle, bookIndex)
         print "Found {} by {} published in {}".format(bookDetails["title"], bookDetails["author"],
                                                       bookDetails["date"])
-        correctBook = raw_input("would you like to continue? [yes]/no/next/manual: ")
+        correctBook = raw_input("would you like to continue? [yes]/no/next/search/manual: ")
         if correctBook == "next":
             bookIndex += 1
-        elif correctBook == "manual":
+        elif correctBook == "search":
             bookTitle = raw_input("what book are you looking for? ")
             bookIndex = 0
+        elif correctBook == "manual":
+            bookTitle = raw_input("what would you like to call the book ")
+            bookIndex = 0
+            if bookTitle:
+                bookDetails = dict()
+                bookDetails["title"] = bookTitle
+                #TODO manual the rest of the stuff
+                bookDetails["author"] = ""
+                bookDetails["date"] = ""
+                bookDetails["description"] = ""
+                bookDetails["thumbnailURL"] = ""
+                return bookDetails
+            else:
+                print "no title provided"
+                return
         elif correctBook == "yes" or correctBook == "":
             print "great lets continue"
             return bookDetails
@@ -158,11 +173,26 @@ def getBookInfo(title, bookIndex=0):
         books = request.json()
         bookDetails = dict()
         #print books["items"][0]["volumeInfo"]
-        bookDetails["title"] = books["items"][0]["volumeInfo"]["title"]
-        bookDetails["author"] = books["items"][0]["volumeInfo"]["authors"][0]
-        bookDetails["date"] = books["items"][0]["volumeInfo"]["publishedDate"]
-        bookDetails["description"] = books["items"][0]["volumeInfo"]["description"]
-        bookDetails["thumbnailURL"] = books["items"][0]["volumeInfo"]["imageLinks"]["thumbnail"]
+        if books["items"][0]["volumeInfo"]["title"]:
+            bookDetails["title"] = books["items"][0]["volumeInfo"]["title"]
+        else:
+            bookDetails["title"] = ""
+        if books["items"][0]["volumeInfo"]["authors"][0]:
+            bookDetails["author"] = books["items"][0]["volumeInfo"]["authors"][0]
+        else:
+            bookDetails["author"] = ""
+        if books["items"][0]["volumeInfo"]["publishedDate"]:
+            bookDetails["date"] = books["items"][0]["volumeInfo"]["publishedDate"]
+        else:
+            bookDetails["date"] = ""
+        if books["items"][0]["volumeInfo"]["description"]:
+            bookDetails["description"] = books["items"][0]["volumeInfo"]["description"]
+        else:
+            bookDetails["description"] = ""
+        if books["items"][0]["volumeInfo"]["imageLinks"]["thumbnail"]:
+            bookDetails["thumbnailURL"] = books["items"][0]["volumeInfo"]["imageLinks"]["thumbnail"]
+        else:
+            bookDetails["thumbnailURL"] = ""
         #print "title: {}".format(bookDetails["title"])
         #print "author: {}".format(bookDetails["author"])
         #print "date: {}".format(bookDetails["date"])
