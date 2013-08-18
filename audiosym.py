@@ -178,7 +178,7 @@ def getBookInfo(title, bookIndex=0):
         else:
             print "no title found"
             return
-        if 0 in books["items"][0]["volumeInfo"]["authors"]:
+        if "authors" in books["items"][0]["volumeInfo"] and 0 in books["items"][0]["volumeInfo"]["authors"]:
             bookDetails["author"] = books["items"][0]["volumeInfo"]["authors"][0]
         else:
             bookDetails["author"] = ""
