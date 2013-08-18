@@ -85,7 +85,7 @@ def findBookDetails(source):
 def verifyCorrectOrder(args):
     # we have identified the book on books.google.com so we have (title, author, description, date, thumbnail)
         print "\nidentified the following files"
-        for bookFile in sorted(getSourceFileList(args.source)):
+        for bookFile in getSourceFileList(args.source):
             print bookFile
         correctOrder = raw_input("did they print out in the correct order? [yes]/no: ")
         #if the files are not in order its going to be a pain in the ass to fix. Do you do one by one?
@@ -107,7 +107,7 @@ def actionSummary(args, bookDetails, scriptPath):
     print ""
     print "planning on creating the following symlinks"
     print "symlink -> file"
-    for index, file in enumerate(sorted(getSourceFileList(args.source))):
+    for index, file in enumerate(getSourceFileList(args.source)):
         print "{}.%03d{} -> {}".format(cleanTitle(bookDetails["title"]), os.path.splitext(file)[1], file) % (
             index + 1)
     print "index.php -> {}".format(scriptPath)
@@ -126,7 +126,7 @@ def createSymlinks(args, bookDetails, scriptPath):
             print "directory created"
             os.chdir("{}/{}".format(args.destination.rstrip('/'), cleanTitle(bookDetails["title"])))
             print "creating symlinks"
-            for index, file in enumerate(sorted(getSourceFileList(args.source))):
+            for index, file in enumerate(getSourceFileList(args.source)):
                 os.symlink("{}/{}".format(args.source.rstrip('/'), file), "{}/{}/{}.%03d{}".format(args.destination.rstrip('/'), cleanTitle(bookDetails["title"]), cleanTitle(bookDetails["title"]), os.path.splitext(file)[1]) % (index + 1))
             #Symlinks the index.txt to index.php in the new audiobook directory
             if os.path.exists(scriptPath):
@@ -162,7 +162,20 @@ def getSourceFileList(directory):
             for filename in filenames:
                 if fnmatch.fnmatch(os.path.join(dirname, filename).lstrip("./"), "*.mp3") or fnmatch.fnmatch(os.path.join(dirname, filename).lstrip("./"), "*.m4b") or fnmatch.fnmatch(os.path.join(dirname, filename).lstrip("./"), "*.acc"):
                     fileList.append(os.path.join(dirname, filename).lstrip("./"))
-    return fileList
+        sortingList = []
+        #extract and order all integers in the files name to fix the issues of 1,10,11,12,13,2,3,4,5,6,7,8,9
+        for name in fileList:
+            integers = re.findall("\d+", name)
+            integers = map(int, integers)
+            integers.append(name)
+            sortingList.append(integers)
+        orderedFiles = []
+        for name in sorted(sortingList):
+            orderedFiles.append(name[-1])
+            return orderedFiles
+    else:
+        print "Directory does not exist: " + directory
+        return
 
 
 def getBookInfo(title, bookIndex=0):
@@ -172,36 +185,36 @@ def getBookInfo(title, bookIndex=0):
     if request.status_code == 200 and len(request.text) > 0:
         books = request.json()
         bookDetails = dict()
-        #print books["items"][0]["volumeInfo"]
-        if "title" in books["items"][0]["volumeInfo"]:
-            bookDetails["title"] = books["items"][0]["volumeInfo"]["title"]
-        else:
-            print "no title found"
-            return
-        if "authors" in books["items"][0]["volumeInfo"] and 0 in books["items"][0]["volumeInfo"]["authors"]:
-            bookDetails["author"] = books["items"][0]["volumeInfo"]["authors"][0]
-        else:
-            bookDetails["author"] = ""
-        if "publishedDate" in books["items"][0]["volumeInfo"]:
-            bookDetails["date"] = books["items"][0]["volumeInfo"]["publishedDate"]
-        else:
-            bookDetails["date"] = ""
-        if "description" in books["items"][0]["volumeInfo"]:
-            bookDetails["description"] = books["items"][0]["volumeInfo"]["description"]
-        else:
-            bookDetails["description"] = ""
-        if "thumbnail" in books["items"][0]["volumeInfo"]["imageLinks"]["thumbnail"]:
-            bookDetails["thumbnailURL"] = books["items"][0]["volumeInfo"]["imageLinks"]["thumbnail"]
-        else:
-            bookDetails["thumbnailURL"] = ""
-        #print "title: {}".format(bookDetails["title"])
-        #print "author: {}".format(bookDetails["author"])
-        #print "date: {}".format(bookDetails["date"])
-        #print "description: {}".format(unicode(bookDetails["description"], "utf8"))
-        #print "thumbnail: {}".format(bookDetails["thumbnailURL"])
-        return bookDetails
-    else:
-        print "failed"
+        if "items" in books and "volumeInfo" in books["items"][0]:
+            #print books["items"][0]["volumeInfo"]
+            if "title" in books["items"][0]["volumeInfo"]:
+                bookDetails["title"] = books["items"][0]["volumeInfo"]["title"]
+            else:
+                print "no title found"
+                return
+            if "authors" in books["items"][0]["volumeInfo"] and len(books["items"][0]["volumeInfo"]["authors"]) > 1:
+                bookDetails["author"] = books["items"][0]["volumeInfo"]["authors"][0]
+            else:
+                bookDetails["author"] = ""
+            if "publishedDate" in books["items"][0]["volumeInfo"]:
+                bookDetails["date"] = books["items"][0]["volumeInfo"]["publishedDate"]
+            else:
+                bookDetails["date"] = ""
+            if "description" in books["items"][0]["volumeInfo"]:
+                bookDetails["description"] = books["items"][0]["volumeInfo"]["description"]
+            else:
+                bookDetails["description"] = ""
+            if "thumbnail" in books["items"][0]["volumeInfo"]["imageLinks"]["thumbnail"]:
+                bookDetails["thumbnailURL"] = books["items"][0]["volumeInfo"]["imageLinks"]["thumbnail"]
+            else:
+                bookDetails["thumbnailURL"] = ""
+            #print "title: {}".format(bookDetails["title"])
+            #print "author: {}".format(bookDetails["author"])
+            #print "date: {}".format(bookDetails["date"])
+            #print "description: {}".format(unicode(bookDetails["description"], "utf8"))
+            #print "thumbnail: {}".format(bookDetails["thumbnailURL"])
+            return bookDetails
+    print "failed"
     return
 
 
