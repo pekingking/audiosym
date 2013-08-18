@@ -177,7 +177,7 @@ def getSourceFileList(directory, sortDigits = False):
         sortingList = []
         #extract and order all integers in the files name to fix the issues of 1,10,11,12,13,2,3,4,5,6,7,8,9
         for name in fileList:
-            integers = re.findall("\d+", name.substring(:))
+            integers = re.findall("\d+", name)
             integers = map(int, integers)
             integers.append(name)
             sortingList.append(integers)
