@@ -172,7 +172,7 @@ def getSourceFileList(directory):
         orderedFiles = []
         for name in sorted(sortingList):
             orderedFiles.append(name[-1])
-            return orderedFiles
+        return orderedFiles
     else:
         print "Directory does not exist: " + directory
         return
@@ -192,7 +192,7 @@ def getBookInfo(title, bookIndex=0):
             else:
                 print "no title found"
                 return
-            if "authors" in books["items"][0]["volumeInfo"] and len(books["items"][0]["volumeInfo"]["authors"]) > 1:
+            if "authors" in books["items"][0]["volumeInfo"]:
                 bookDetails["author"] = books["items"][0]["volumeInfo"]["authors"][0]
             else:
                 bookDetails["author"] = ""
