@@ -173,23 +173,24 @@ def getBookInfo(title, bookIndex=0):
         books = request.json()
         bookDetails = dict()
         #print books["items"][0]["volumeInfo"]
-        if books["items"][0]["volumeInfo"]["title"]:
+        if "title" in books["items"][0]["volumeInfo"]:
             bookDetails["title"] = books["items"][0]["volumeInfo"]["title"]
         else:
-            bookDetails["title"] = ""
-        if books["items"][0]["volumeInfo"]["authors"][0]:
+            print "no title found"
+            return
+        if 0 in books["items"][0]["volumeInfo"]["authors"]:
             bookDetails["author"] = books["items"][0]["volumeInfo"]["authors"][0]
         else:
             bookDetails["author"] = ""
-        if books["items"][0]["volumeInfo"]["publishedDate"]:
+        if "publishedDate" in books["items"][0]["volumeInfo"]:
             bookDetails["date"] = books["items"][0]["volumeInfo"]["publishedDate"]
         else:
             bookDetails["date"] = ""
-        if books["items"][0]["volumeInfo"]["description"]:
+        if "description" in books["items"][0]["volumeInfo"]:
             bookDetails["description"] = books["items"][0]["volumeInfo"]["description"]
         else:
             bookDetails["description"] = ""
-        if books["items"][0]["volumeInfo"]["imageLinks"]["thumbnail"]:
+        if "thumbnail" in books["items"][0]["volumeInfo"]["imageLinks"]["thumbnail"]:
             bookDetails["thumbnailURL"] = books["items"][0]["volumeInfo"]["imageLinks"]["thumbnail"]
         else:
             bookDetails["thumbnailURL"] = ""
