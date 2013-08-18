@@ -115,7 +115,7 @@ def createSymlinks(args, bookDetails, scriptPath):
                 os.symlink("{}/{}".format(args.source.rstrip('/'), file), "{}/{}/{}.%03d{}".format(args.destination.rstrip('/'), cleanTitle(bookDetails["title"]), cleanTitle(bookDetails["title"]), os.path.splitext(file)[1]) % (index + 1))
             #Symlinks the index.txt to index.php in the new audiobook directory
             if os.path.exists(scriptPath):
-                os.symlink("{}/{}/{}".format(args.destination.rstrip('/'), cleanTitle(bookDetails["title"]), "index.php"), scriptPath)
+                os.symlink(scriptPath, "{}/{}/{}".format(args.destination.rstrip('/'), cleanTitle(bookDetails["title"]), "index.php"))
             print "symlinks created"
             print "thank you for using audiosym"
             return True
