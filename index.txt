@@ -1,0 +1,75 @@
+<?php
+header('Content-Type: application/xml; charset=utf-8');
+// CONFIGURE THESE VARIABLES:
+
+// actual place where your mp3s live on your server's filesystem. TRAILING SLASH REQ'D.
+$bookDirectory=getcwd();
+//echo $bookDirectory;
+// corresponding web URL for accessing the book directory. TRAILING SLASH REQ'D.
+$bookURL='http://'.$_SERVER['SERVER_NAME'].preg_replace('/\/[^\/]+\.[^\/]+$/', '/', $_SERVER['REQUEST_URI']);
+//echo $bookURL;
+// name your feed
+$feedTitle=basename(__DIR__);
+//echo $feedTitle;
+// where every entry in your feed will link to, sort of like a "for more info" link
+$feedLink='http://'.$_SERVER['SERVER_NAME'].preg_replace('/\/[^\/]+\.[^\/]+$/', '/', $_SERVER['REQUEST_URI']);
+//echo feedLink;
+// describe your feed
+$feedDescription="AudioBook";
+//echo feedDescription;
+// outline your copyright / creative commons / licensing terms
+$feedCopyright="Who Knows";
+
+// your email... if you dare!
+$authorEmail="myemail@mywebsite.com";
+
+// how often should feed readers check for new material (in seconds) -- mostly ignored by readers.
+$ttl = 9999;
+
+// END OF STUFF YOU NEED TO CONFIGURE!
+
+echo "<?xml version=\"1.0\" encoding=\"utf-8\"?>\r";
+?>
+
+<rss version="2.0">
+  <channel>
+    <title><? echo $feedTitle; ?></title>
+    <link><? echo $feedLink; ?></link>
+    <description><? echo $feedDescription; ?></description>
+    <language>en</language>
+    <copyright><? echo $feedCopyright; ?></copyright>
+    <ttl><? echo $ttl; ?></ttl>
+
+<?php
+// step through each item...
+    $files = scandir(getcwd());
+    foreach ($files as $thisFile)
+    //$fileDir = opendir($bookDirectory) or die ($php_errormsg);
+    //while (false !== ($thisFile = readdir($fileDir))) // step through book directory
+    {
+        $thisFilePath = $bookDirectory . $thisFile;
+        //echo 'file'.$thisFilePath.'::';
+            if (preg_match("/\.(mp3|m4b)$/i", $thisFilePath)) //(is_file($thisFilePath) && strrchr ($thisFilePath, '.') == ".mp3") // not . or .., ends in .mp3
+            {
+                // only include files that have a corresponding .txt file
+                //$thisTextPath = substr_replace($thisFilePath, ".txt", (strlen($thisFilePath) - 4));
+                //if (is_file($thisTextPath))
+                //{
+                    $myFullURL=$bookURL . $thisFile;
+                    $myFileSize=filesize($thisFilePath);
+                  ?>
+      <item>
+        <title><? echo $thisFile; ?></title>
+        <link><? echo $feedLink; ?></link>
+        <description><?echo $thisFile ?></description>
+        <enclosure url="<? echo $myFullURL; ?>" length="<? echo $myFileSize; ?>" type="audio/mpeg" />
+        <guid><? echo $myFullURL; ?></guid>
+      </item>
+<?
+                //}
+            }
+    }
+    closedir($fileDir);
+
+
+?>
