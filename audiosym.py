@@ -25,15 +25,15 @@ def main():
         sys.exit()
     # Verify that the files are in the correct order.
     # If they are not then the audiobook will be all out of order when we symlink
-    correctOrder = verifyCorrectOrder(args)
-    if not correctOrder:
+    orderedFileList = verifyCorrectOrder(args)
+    if not orderedFileList:
         sys.exit()
     # Show the user a list of the symlinks that are about to be created
-    proceed = actionSummary(args, bookDetails, scriptPath)
+    proceed = actionSummary(args, bookDetails, scriptPath, orderedFileList)
     if not proceed:
         sys.exit()
     # Create the symlinks
-    symlinkCreate = createSymlinks(args, bookDetails, scriptPath)
+    symlinkCreate = createSymlinks(args, bookDetails, scriptPath, orderedFileList)
     if not symlinkCreate:
         sys.exit()
     #make sure we are not overwriting something
@@ -84,22 +84,32 @@ def findBookDetails(source):
 
 def verifyCorrectOrder(args):
     # we have identified the book on books.google.com so we have (title, author, description, date, thumbnail)
+        exit = False
         print "\nidentified the following files"
-        for bookFile in getSourceFileList(args.source):
+        orderedFileList = getSourceFileList(args.source)
+        for bookFile in orderedFileList:
             print bookFile
         correctOrder = raw_input("did they print out in the correct order? [yes]/no: ")
         #if the files are not in order its going to be a pain in the ass to fix. Do you do one by one?
         #TODO manual option for sorting
-        if correctOrder == "no":
+        if correctOrder == "no" and not exit:
+            exit = True
+            print "\nidentified the following files (alternate sorting)"
+            orderedFileList = getSourceFileList(args.source, True)
+            for bookFile in orderedFileList:
+                print bookFile
+            correctOrder = raw_input("did they print out in the correct order this time? [yes]/no: ")
+        if correctOrder == "no" and exit:
             print "\nnot available in version 1.0 "
             print "we need to order these before we can fix this"
-            return False
+            return
         # the files were in order lets print out what we plan to do
-        elif correctOrder == "yes" or correctOrder == "":
-            return True
+        if correctOrder == "yes" or correctOrder == "":
+            return orderedFileList
+        return
 
 
-def actionSummary(args, bookDetails, scriptPath):
+def actionSummary(args, bookDetails, scriptPath, orderedFileList):
     print "\n"
     print "planning on creating the following directory and symlinks:"
     print "source:      {}".format(args.source)
@@ -107,7 +117,7 @@ def actionSummary(args, bookDetails, scriptPath):
     print ""
     print "planning on creating the following symlinks"
     print "symlink -> file"
-    for index, file in enumerate(getSourceFileList(args.source)):
+    for index, file in enumerate(orderedFileList):
         print "{}.%03d{} -> {}".format(cleanTitle(bookDetails["title"]), os.path.splitext(file)[1], file) % (
             index + 1)
     print "index.php -> {}".format(scriptPath)
@@ -118,7 +128,7 @@ def actionSummary(args, bookDetails, scriptPath):
         return False
 
 
-def createSymlinks(args, bookDetails, scriptPath):
+def createSymlinks(args, bookDetails, scriptPath, orderedFileList):
     if not os.path.exists("{}/{}".format(args.destination.rstrip('/'), cleanTitle(bookDetails["title"]))):
         print "creating directory"
         os.mkdir("{}/{}".format(args.destination.rstrip('/'), cleanTitle(bookDetails["title"])))
@@ -126,7 +136,7 @@ def createSymlinks(args, bookDetails, scriptPath):
             print "directory created"
             os.chdir("{}/{}".format(args.destination.rstrip('/'), cleanTitle(bookDetails["title"])))
             print "creating symlinks"
-            for index, file in enumerate(getSourceFileList(args.source)):
+            for index, file in enumerate(orderedFileList):
                 os.symlink("{}/{}".format(args.source.rstrip('/'), file), "{}/{}/{}.%03d{}".format(args.destination.rstrip('/'), cleanTitle(bookDetails["title"]), cleanTitle(bookDetails["title"]), os.path.splitext(file)[1]) % (index + 1))
             #Symlinks the index.txt to index.php in the new audiobook directory
             if os.path.exists(scriptPath):
@@ -152,7 +162,7 @@ def cleanTitle(title):
     return cleanTitle
 
 
-def getSourceFileList(directory):
+def getSourceFileList(directory, sortDigits = False):
     """Returns a list of files in a directory"""
     fileList = []
     if os.path.exists(directory):
@@ -162,10 +172,12 @@ def getSourceFileList(directory):
             for filename in filenames:
                 if fnmatch.fnmatch(os.path.join(dirname, filename).lstrip("./"), "*.mp3") or fnmatch.fnmatch(os.path.join(dirname, filename).lstrip("./"), "*.m4b") or fnmatch.fnmatch(os.path.join(dirname, filename).lstrip("./"), "*.acc"):
                     fileList.append(os.path.join(dirname, filename).lstrip("./"))
+        if not sortDigits:
+            return fileList
         sortingList = []
         #extract and order all integers in the files name to fix the issues of 1,10,11,12,13,2,3,4,5,6,7,8,9
         for name in fileList:
-            integers = re.findall("\d+", name)
+            integers = re.findall("\d+", name.substring(:))
             integers = map(int, integers)
             integers.append(name)
             sortingList.append(integers)
