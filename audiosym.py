@@ -55,19 +55,20 @@ def findBookDetails(source):
             bookTitle = raw_input("what book are you looking for? ")
             bookIndex = 0
         elif correctBook == "manual":
-            bookTitle = raw_input("what would you like to call the book ")
+            bookTitle = raw_input("what would you like to call the book?")
+            bookAuthor = raw_input("who wrote this book?")
             bookIndex = 0
-            if bookTitle:
+            if bookTitle and bookAuthor:
                 bookDetails = dict()
                 bookDetails["title"] = bookTitle
                 #TODO manual the rest of the stuff
-                bookDetails["author"] = ""
+                bookDetails["author"] = bookAuthor
                 bookDetails["date"] = ""
                 bookDetails["description"] = ""
                 bookDetails["thumbnailURL"] = ""
                 return bookDetails
             else:
-                print "no title provided"
+                print "no title provided or author"
                 return
         elif correctBook == "yes" or correctBook == "":
             print "great lets continue"
@@ -113,7 +114,7 @@ def actionSummary(args, bookDetails, scriptPath, orderedFileList):
     print "\n"
     print "planning on creating the following directory and symlinks:"
     print "source:      {}".format(args.source)
-    print "destination: {}/{}".format(args.destination.rstrip('/'), cleanTitle(bookDetails["title"]))
+    print "destination: {}/{}".format(args.destination.rstrip('/'), cleanTitle(bookDetails["title"]) + ":" + cleanTitle(bookDetails["author"]))
     print ""
     print "planning on creating the following symlinks"
     print "symlink -> file"
@@ -129,23 +130,23 @@ def actionSummary(args, bookDetails, scriptPath, orderedFileList):
 
 
 def createSymlinks(args, bookDetails, scriptPath, orderedFileList):
-    if not os.path.exists("{}/{}".format(args.destination.rstrip('/'), cleanTitle(bookDetails["title"]))):
+    if not os.path.exists("{}/{}".format(args.destination.rstrip('/'), cleanTitle(bookDetails["title"]) + ":" + cleanTitle(bookDetails["author"]))):
         print "creating directory"
-        os.mkdir("{}/{}".format(args.destination.rstrip('/'), cleanTitle(bookDetails["title"])))
-        if os.path.exists("{}/{}".format(args.destination.rstrip('/'), cleanTitle(bookDetails["title"]))):
+        os.mkdir("{}/{}".format(args.destination.rstrip('/'), cleanTitle(bookDetails["title"]) + ":" + cleanTitle(bookDetails["author"])))
+        if os.path.exists("{}/{}".format(args.destination.rstrip('/'), cleanTitle(bookDetails["title"]) + ":" + cleanTitle(bookDetails["author"]))):
             print "directory created"
-            os.chdir("{}/{}".format(args.destination.rstrip('/'), cleanTitle(bookDetails["title"])))
+            os.chdir("{}/{}".format(args.destination.rstrip('/'), cleanTitle(bookDetails["title"]) + ":" + cleanTitle(bookDetails["author"])))
             print "creating symlinks"
             for index, file in enumerate(orderedFileList):
-                os.symlink("{}/{}".format(args.source.rstrip('/'), file), "{}/{}/{}.%03d{}".format(args.destination.rstrip('/'), cleanTitle(bookDetails["title"]), cleanTitle(bookDetails["title"]), os.path.splitext(file)[1]) % (index + 1))
+                os.symlink("{}/{}".format(args.source.rstrip('/'), file), "{}/{}/{}.%03d{}".format(args.destination.rstrip('/'), cleanTitle(bookDetails["title"]) + ":" + cleanTitle(bookDetails["author"]), cleanTitle(bookDetails["title"]), os.path.splitext(file)[1]) % (index + 1))
             #Symlinks the index.txt to index.php in the new audiobook directory
             if os.path.exists(scriptPath):
-                os.symlink(scriptPath, "{}/{}/{}".format(args.destination.rstrip('/'), cleanTitle(bookDetails["title"]), "index.php"))
+                os.symlink(scriptPath, "{}/{}/{}".format(args.destination.rstrip('/'), cleanTitle(bookDetails["title"]) + ":" + cleanTitle(bookDetails["author"]), "index.php"))
             print "symlinks created"
             print "thank you for using audiosym"
             return True
     else:
-        print "the following directory already exists {}/{}".format(args.destination.rstrip('/'), cleanTitle(bookDetails["title"]))
+        print "the following directory already exists {}/{}".format(args.destination.rstrip('/'), cleanTitle(bookDetails["title"]) + ":" + cleanTitle(bookDetails["author"]))
         return False
 
 
@@ -208,7 +209,8 @@ def getBookInfo(title, bookIndex=0):
             if "authors" in books["items"][0]["volumeInfo"]:
                 bookDetails["author"] = books["items"][0]["volumeInfo"]["authors"][0]
             else:
-                bookDetails["author"] = ""
+                print "no title found"
+                return
             if "publishedDate" in books["items"][0]["volumeInfo"]:
                 bookDetails["date"] = books["items"][0]["volumeInfo"]["publishedDate"]
             else:
