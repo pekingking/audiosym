@@ -236,7 +236,7 @@ def getBookInfo(title, bookIndex=0):
     bookDetails["date"] = ""
     bookDetails["description"] = ""
     bookDetails["thumbnailURL"] = ""
-    return
+    return bookDetails
 
 
 if __name__ == '__main__':
