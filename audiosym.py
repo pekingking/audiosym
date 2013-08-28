@@ -205,12 +205,12 @@ def getBookInfo(title, bookIndex=0):
                 bookDetails["title"] = books["items"][0]["volumeInfo"]["title"]
             else:
                 print "no title found"
-                return
+                bookDetails["title"] = "NOT FOUND"
             if "authors" in books["items"][0]["volumeInfo"]:
                 bookDetails["author"] = books["items"][0]["volumeInfo"]["authors"][0]
             else:
                 print "no title found"
-                return
+                bookDetails["author"] = "NOT FOUND"
             if "publishedDate" in books["items"][0]["volumeInfo"]:
                 bookDetails["date"] = books["items"][0]["volumeInfo"]["publishedDate"]
             else:
