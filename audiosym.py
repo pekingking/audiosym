@@ -219,7 +219,7 @@ def getBookInfo(title, bookIndex=0):
                 bookDetails["description"] = books["items"][0]["volumeInfo"]["description"]
             else:
                 bookDetails["description"] = ""
-            if "thumbnail" in books["items"][0]["volumeInfo"]["imageLinks"]["thumbnail"]:
+            if "imageLinks" in books["items"][0]["volumeInfo"] and "thumbnail" in books["items"][0]["volumeInfo"]["imageLinks"]:
                 bookDetails["thumbnailURL"] = books["items"][0]["volumeInfo"]["imageLinks"]["thumbnail"]
             else:
                 bookDetails["thumbnailURL"] = ""
