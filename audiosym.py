@@ -229,7 +229,13 @@ def getBookInfo(title, bookIndex=0):
             #print "description: {}".format(unicode(bookDetails["description"], "utf8"))
             #print "thumbnail: {}".format(bookDetails["thumbnailURL"])
             return bookDetails
-    print "failed"
+    print "Google API search came back empty"
+    bookDetails = dict()
+    bookDetails["title"] = "NOT FOUND"
+    bookDetails["author"] = "NOT FOUND"
+    bookDetails["date"] = ""
+    bookDetails["description"] = ""
+    bookDetails["thumbnailURL"] = ""
     return
 
 
