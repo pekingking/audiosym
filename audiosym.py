@@ -171,7 +171,7 @@ def getSourceFileList(directory, sortDigits = False):
         for dirname, dirnames, filenames in os.walk("./"):
             # print path to all filenames.
             for filename in filenames:
-                if fnmatch.fnmatch(os.path.join(dirname, filename).lstrip("./"), "*.mp3") or fnmatch.fnmatch(os.path.join(dirname, filename).lstrip("./"), "*.m4b") or fnmatch.fnmatch(os.path.join(dirname, filename).lstrip("./"), "*.acc"):
+                if fnmatch.fnmatch(os.path.join(dirname, filename).lstrip("./").lower(), "*.mp3") or fnmatch.fnmatch(os.path.join(dirname, filename).lstrip("./").lower(), "*.m4b") or fnmatch.fnmatch(os.path.join(dirname, filename).lstrip("./").lower(), "*.acc"):
                     fileList.append(os.path.join(dirname, filename).lstrip("./"))
         fileList = sorted(fileList)
         if not sortDigits:
