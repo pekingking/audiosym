@@ -9,7 +9,7 @@ $bookDirectory=getcwd();
 $bookURL='http://'.$_SERVER['SERVER_NAME'].preg_replace('/\/[^\/]+\.[^\/]+$/', '/', $_SERVER['REQUEST_URI']);
 //echo $bookURL;
 // name your feed
-$feedTitle=basename(__DIR__);
+$feedTitle=basename($bookDirectory);
 //echo $feedTitle;
 // where every entry in your feed will link to, sort of like a "for more info" link
 $feedLink='http://'.$_SERVER['SERVER_NAME'].preg_replace('/\/[^\/]+\.[^\/]+$/', '/', $_SERVER['REQUEST_URI']);
