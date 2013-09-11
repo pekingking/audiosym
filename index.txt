@@ -39,6 +39,9 @@ echo "<?xml version=\"1.0\" encoding=\"utf-8\"?>\r";
     <language>en</language>
     <copyright><? echo $feedCopyright; ?></copyright>
     <ttl><? echo $ttl; ?></ttl>
+    <image>
+        <url><? echo $bookURL . 'folder.jpg'?></url>
+    </image>
 
 <?php
 // step through each item...
