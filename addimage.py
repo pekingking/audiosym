@@ -11,7 +11,9 @@ class getBook():
         logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)
         logging.debug('A debug message!')
 
-    def findBookImageURL(self, title):
+    def findBookImageURL(self, title, series=False):
+        if series:
+            title = re.sub("^[0-9]+\.", "", title)
         response = requests.get("http://bigbooksearch.com/query.php?SearchIndex=books&Keywords={}&ItemPage=1".format(title))
         if response.status_code == 200:
             imageUrlArray = re.findall("<a href='[^']+'><img id='[^']+' src='([^']+)'", response.text)
@@ -40,13 +42,17 @@ class getBook():
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("-d", "--destination", help="base directory to attach symlinks to")
+    parser.add_argument("-s", "--series", help="is this directory part of a series 01.title, 02.title, 03.title")
     args = parser.parse_args()
     if args.destination and not os.path.exists(args.destination):
         logging.error("{} is not a valid directory".format(args.destination))
         sys.exit()
     print args.destination
     saveBook = getBook()
-    url = saveBook.findBookImageURL(os.path.basename(args.destination))
+    if args.series:
+        url = saveBook.findBookImageURL(os.path.basename(args.destination), True)
+    else:
+        url = saveBook.findBookImageURL(os.path.basename(args.destination))
     if not url:
         logging.error("could not find url")
     saveBook.saveImage(url, args.destination, 'folder.jpg')
