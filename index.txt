@@ -42,7 +42,7 @@ echo "<?xml version=\"1.0\" encoding=\"utf-8\"?>\r";
 
 <?php
 // step through each item...
-    $files = scandir(getcwd());
+    $files = scandir(getcwd(), 1);
     foreach ($files as $thisFile)
     //$fileDir = opendir($bookDirectory) or die ($php_errormsg);
     //while (false !== ($thisFile = readdir($fileDir))) // step through book directory
