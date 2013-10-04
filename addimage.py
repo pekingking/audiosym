@@ -13,7 +13,11 @@ class getBook():
 
     def findBookImageURL(self, title, series=False):
         if series:
-            title = re.sub("^[0-9]+\.", "", title)
+            logging.debug("extrating number from title: {}".format(title))
+            title = re.sub("^\d+\.", "", title)
+	if title == '':
+            logging.error("Book title is blank")
+            return
         response = requests.get("http://bigbooksearch.com/query.php?SearchIndex=books&Keywords={}&ItemPage=1".format(title))
         if response.status_code == 200:
             imageUrlArray = re.findall("<a href='[^']+'><img id='[^']+' src='([^']+)'", response.text)
@@ -50,11 +54,13 @@ def main():
     print args.destination
     saveBook = getBook()
     if args.series:
-        url = saveBook.findBookImageURL(os.path.basename(args.destination), True)
+        url = saveBook.findBookImageURL(os.path.basename(args.destination.rstrip("/")), True)
     else:
-        url = saveBook.findBookImageURL(os.path.basename(args.destination))
+        url = saveBook.findBookImageURL(os.path.basename(args.destination.rstrip("/")))
     if not url:
         logging.error("could not find url")
     saveBook.saveImage(url, args.destination, 'folder.jpg')
+
 if __name__ == "__main__":
     main()
+
