@@ -122,7 +122,7 @@ class audiosym():
     def cleanTitle(self, title):
         """clean up titles so they have no special characters and are . separated"""
         cleanTitle = re.sub("'", "", title)
-        cleanTitle = re.sub(r'(?i)(audiobook|unabridged|abridged)', "", cleanTitle)
+        cleanTitle = re.sub(r'(?i)(audiobook|unabridged|abridged|chapterized)', "", cleanTitle)
         cleanTitle = re.sub("\([^)]+\)", "", cleanTitle)
         cleanTitle = re.sub("\[[^\]]+\]", "", cleanTitle)
         cleanTitle = re.sub("[^a-zA-Z1-9]", ".", cleanTitle)
@@ -205,7 +205,13 @@ class audiosym():
         bookDetails["thumbnailURL"] = ""
         return bookDetails
 
-    def findBookImageURL(self, title):
+    def findBookImageURL(self, title, series=False):
+        if series:
+            logging.debug("extrating number from title: {}".format(title))
+            title = re.sub("^\d+\.", "", title)
+            if title == '':
+                logging.error("Book title is blank")
+            return
         response = requests.get("http://bigbooksearch.com/query.php?SearchIndex=books&Keywords={}&ItemPage=1".format(title))
         if response.status_code == 200:
             imageUrlArray = re.findall("<a href='[^']+'><img id='[^']+' src='([^']+)'", response.text)
@@ -264,11 +270,11 @@ def main():
     if not symlinkCreate:
         sys.exit()
     #make sure we are not overwriting something
-
-    url = audiosymlink.findBookImageURL(os.path.basename(args.destination.rstrip('/')))
+    folder = '{}:{}'.format(audiosymlink.cleanTitle(bookDetails["title"]), audiosymlink.cleanTitle(bookDetails["author"]))
+    url = audiosymlink.findBookImageURL(folder)
     if not url:
         logging.error("could not find url")
-    audiosymlink.saveImage(url, args.destination.rstrip('/'), 'folder.jpg')
+    audiosymlink.saveImage(url, "{}/{}".format(args.destination.rstrip('/'), folder), 'folder.jpg')
 
 if __name__ == '__main__':
     main()
