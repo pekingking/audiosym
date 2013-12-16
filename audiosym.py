@@ -274,7 +274,8 @@ def main():
     url = audiosymlink.findBookImageURL(folder)
     if not url:
         logging.error("could not find url")
-    audiosymlink.saveImage(url, "{}/{}".format(args.destination.rstrip('/'), folder), 'folder.jpg')
+    else:
+        audiosymlink.saveImage(url, "{}/{}".format(args.destination.rstrip('/'), folder), 'folder.jpg')
 
 if __name__ == '__main__':
     main()
