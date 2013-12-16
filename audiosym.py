@@ -163,7 +163,7 @@ class audiosym():
     def getBookInfo(self, title, bookIndex=0):
         """pull book information from books.google.com api and return a dictionary"""
         request = requests.get(
-            "https://www.googleapis.com/books/v1/volumes?&printType=books&q={}&startIndex={}".format(cleanTitle(title).replace(".", " "), str(bookIndex)))
+            "https://www.googleapis.com/books/v1/volumes?&printType=books&q={}&startIndex={}".format(self.cleanTitle(title).replace(".", " "), str(bookIndex)))
         if request.status_code == 200 and len(request.text) > 0:
             books = request.json()
             bookDetails = dict()
