@@ -5,7 +5,9 @@ import fnmatch
 import requests
 import sys
 import logging
-
+import sys
+reload(sys)
+sys.setdefaultencoding("utf-8")
 
 class audiosym():
     def __init__(self):
@@ -20,8 +22,7 @@ class audiosym():
         print "\nsearch term = {}".format(self.cleanTitle(bookTitle))
         while True:
             bookDetails = self.getBookInfo(bookTitle, bookIndex)
-            print "Found {} by {} published in {}".format(bookDetails["title"], bookDetails["author"],
-                                                          bookDetails["date"])
+            print "Found {} by {} published in {}".format(bookDetails["title"], bookDetails["author"], bookDetails["date"])
             correctBook = raw_input("would you like to continue? [yes]/no/next/search/manual: ")
             if correctBook == "next":
                 bookIndex += 1
