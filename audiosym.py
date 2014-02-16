@@ -211,9 +211,9 @@ class audiosym():
         if series:
             logging.debug("extrating number from title: {}".format(title))
             title = re.sub("^\d+\.", "", title)
-            if title == '':
-                logging.error("Book title is blank")
-            return
+        if title == '':
+            logging.error("Book title is blank")
+        return
         response = requests.get("http://bigbooksearch.com/query.php?SearchIndex=books&Keywords={}&ItemPage=1".format(title))
         if response.status_code == 200:
             imageUrlArray = re.findall("<a href='[^']+'><img id='[^']+' src='([^']+)'", response.text)
