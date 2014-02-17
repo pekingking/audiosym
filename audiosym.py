@@ -254,8 +254,6 @@ def main():
         print "{} is not a valid directory".format(args.destination)
         sys.exit()
 
-    prepend =
-
     audiosymlink = audiosym()
 
     # Identify audiobook and gather book details from books.google.com api.
