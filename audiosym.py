@@ -83,11 +83,11 @@ class audiosym():
                 return orderedFileList
             return
 
-    def actionSummary(self, args, bookDetails, scriptPath, orderedFileList):
+    def actionSummary(self, args, bookDetails, scriptPath, orderedFileList, prepend=""):
         print "\n"
         print "planning on creating the following directory and symlinks:"
         print "source:      {}".format(args.source)
-        print "destination: {}/{}".format(args.destination.rstrip('/'), self.cleanTitle(bookDetails["title"]) + ":" + self.cleanTitle(bookDetails["author"]))
+        print "destination: {}/{}".format(args.destination.rstrip('/'), prepend + self.cleanTitle(bookDetails["title"]) + ":" + self.cleanTitle(bookDetails["author"]))
         print ""
         print "planning on creating the following symlinks"
         print "symlink -> file"
@@ -101,24 +101,24 @@ class audiosym():
         else:
             return False
 
-    def createSymlinks(self, args, bookDetails, scriptPath, orderedFileList):
-        if not os.path.exists("{}/{}".format(args.destination.rstrip('/'), self.cleanTitle(bookDetails["title"]) + ":" + self.cleanTitle(bookDetails["author"]))):
+    def createSymlinks(self, args, bookDetails, scriptPath, orderedFileList, prepend=""):
+        if not os.path.exists("{}/{}".format(args.destination.rstrip('/'), prepend + self.cleanTitle(bookDetails["title"]) + ":" + self.cleanTitle(bookDetails["author"]))):
             print "creating directory"
-            os.mkdir("{}/{}".format(args.destination.rstrip('/'), self.cleanTitle(bookDetails["title"]) + ":" + self.cleanTitle(bookDetails["author"])))
-            if os.path.exists("{}/{}".format(args.destination.rstrip('/'), self.cleanTitle(bookDetails["title"]) + ":" + self.cleanTitle(bookDetails["author"]))):
+            os.mkdir("{}/{}".format(args.destination.rstrip('/'), prepend + self.cleanTitle(bookDetails["title"]) + ":" + self.cleanTitle(bookDetails["author"])))
+            if os.path.exists("{}/{}".format(args.destination.rstrip('/'), prepend + self.cleanTitle(bookDetails["title"]) + ":" + self.cleanTitle(bookDetails["author"]))):
                 print "directory created"
-                os.chdir("{}/{}".format(args.destination.rstrip('/'), self.cleanTitle(bookDetails["title"]) + ":" + self.cleanTitle(bookDetails["author"])))
+                os.chdir("{}/{}".format(args.destination.rstrip('/'), prepend + self.cleanTitle(bookDetails["title"]) + ":" + self.cleanTitle(bookDetails["author"])))
                 print "creating symlinks"
                 for index, file in enumerate(orderedFileList):
-                    os.symlink("{}/{}".format(args.source.rstrip('/'), file), "{}/{}/{}.%03d{}".format(args.destination.rstrip('/'), self.cleanTitle(bookDetails["title"]) + ":" + self.cleanTitle(bookDetails["author"]), self.cleanTitle(bookDetails["title"]), os.path.splitext(file)[1]) % (index + 1))
+                    os.symlink("{}/{}".format(args.source.rstrip('/'), file), "{}/{}/{}.%03d{}".format(args.destination.rstrip('/'), prepend + self.cleanTitle(bookDetails["title"]) + ":" + self.cleanTitle(bookDetails["author"]), self.cleanTitle(bookDetails["title"]), os.path.splitext(file)[1]) % (index + 1))
                 #Symlinks the index.txt to index.php in the new audiobook directory
                 if os.path.exists(scriptPath):
-                    os.symlink(scriptPath, "{}/{}/{}".format(args.destination.rstrip('/'), self.cleanTitle(bookDetails["title"]) + ":" + self.cleanTitle(bookDetails["author"]), "index.php"))
+                    os.symlink(scriptPath, "{}/{}/{}".format(args.destination.rstrip('/'), prepend + self.cleanTitle(bookDetails["title"]) + ":" + self.cleanTitle(bookDetails["author"]), "index.php"))
                 print "symlinks created"
                 print "thank you for using audiosym"
                 return True
         else:
-            print "the following directory already exists {}/{}".format(args.destination.rstrip('/'), self.cleanTitle(bookDetails["title"]) + ":" + self.cleanTitle(bookDetails["author"]))
+            print "the following directory already exists {}/{}".format(args.destination.rstrip('/'), prepend + self.cleanTitle(bookDetails["title"]) + ":" + self.cleanTitle(bookDetails["author"]))
             return False
 
     def cleanTitle(self, title):
@@ -244,6 +244,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("-s", "--source", help="base directory to attach symlinks to")
     parser.add_argument("-d", "--destination", help="base directory /path/to/books/")
+    parser.add_argument("-p", "--prepend", default="", help="prepend a string to the folder name (use for series)")
     args = parser.parse_args()
     scriptPath = "{}/{}".format(os.path.dirname(os.path.realpath(__file__)), 'index.txt')
     if not os.path.exists(args.source):
@@ -252,6 +253,8 @@ def main():
     if not os.path.exists(args.destination):
         print "{} is not a valid directory".format(args.destination)
         sys.exit()
+
+    prepend =
 
     audiosymlink = audiosym()
 
@@ -265,11 +268,11 @@ def main():
     if not orderedFileList:
         sys.exit()
     # Show the user a list of the symlinks that are about to be created
-    proceed = audiosymlink.actionSummary(args, bookDetails, scriptPath, orderedFileList)
+    proceed = audiosymlink.actionSummary(args, bookDetails, scriptPath, orderedFileList, args.prepend)
     if not proceed:
         sys.exit()
     # Create the symlinks
-    symlinkCreate = audiosymlink.createSymlinks(args, bookDetails, scriptPath, orderedFileList)
+    symlinkCreate = audiosymlink.createSymlinks(args, bookDetails, scriptPath, orderedFileList, args.prepend)
     if not symlinkCreate:
         sys.exit()
     #make sure we are not overwriting something
