@@ -17,14 +17,14 @@ class getBook():
             title = re.sub("^\d+\.", "", title)
             if title == '':
                 logging.error("Book title is blank")
-            return
-        response = requests.get("http://bigbooksearch.com/query.php?SearchIndex=books&Keywords={}&ItemPage=1".format(title))
-        if response.status_code == 200:
-            imageUrlArray = re.findall("<a href='[^']+'><img id='[^']+' src='([^']+)'", response.text)
-            if imageUrlArray:
-                return imageUrlArray[0]
-        logging.error("Could not find image for {}".format(title))
-        return
+        return "https://hdbookcover.appspot.com/{}".format(title)
+        #response = requests.get("http://bigbooksearch.com/query.php?SearchIndex=books&Keywords={}&ItemPage=1".format(title))
+        #if response.status_code == 200:
+        #    imageUrlArray = re.findall("<a href='[^']+'><img id='[^']+' src='([^']+)'", response.text)
+        #    if imageUrlArray:
+        #        return imageUrlArray[0]
+        #logging.error("Could not find image for {}".format(title))
+        #return
 
     def saveImage(self, url, path, name):
         if os.path.exists("{}".format(path)):
