@@ -17,7 +17,7 @@ class getBook():
             title = re.sub("^\d+\.", "", title)
             if title == '':
                 logging.error("Book title is blank")
-        return "https://hdbookcover.appspot.com/{}".format(title)
+        return "https://hdbookcover.appspot.com/{}".format(re.sub('[^\w\.]+', '+', title))
         #response = requests.get("http://bigbooksearch.com/query.php?SearchIndex=books&Keywords={}&ItemPage=1".format(title))
         #if response.status_code == 200:
         #    imageUrlArray = re.findall("<a href='[^']+'><img id='[^']+' src='([^']+)'", response.text)
