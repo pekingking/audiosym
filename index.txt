@@ -52,7 +52,7 @@ echo "<?xml version=\"1.0\" encoding=\"utf-8\"?>\r";
     {
         $thisFilePath = $bookDirectory . $thisFile;
         //echo 'file'.$thisFilePath.'::';
-            if (preg_match("/\.(mp3|m4b)$/i", $thisFilePath)) //(is_file($thisFilePath) && strrchr ($thisFilePath, '.') == ".mp3") // not . or .., ends in .mp3
+            if (preg_match("/\.(mp3|m4b|m4a|acc)$/i", $thisFilePath)) //(is_file($thisFilePath) && strrchr ($thisFilePath, '.') == ".mp3") // not . or .., ends in .mp3
             {
                 // only include files that have a corresponding .txt file
                 //$thisTextPath = substr_replace($thisFilePath, ".txt", (strlen($thisFilePath) - 4));
