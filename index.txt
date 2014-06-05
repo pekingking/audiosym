@@ -1,18 +1,22 @@
 <?php
 header('Content-Type: application/xml; charset=utf-8');
 // CONFIGURE THESE VARIABLES:
+$https_enabled = '';
+if( isset($_SERVER['HTTPS'] ) ) {
+   $https_enabled = 's';
+}
 
 // actual place where your mp3s live on your server's filesystem. TRAILING SLASH REQ'D.
 $bookDirectory=getcwd();
 //echo $bookDirectory;
 // corresponding web URL for accessing the book directory. TRAILING SLASH REQ'D.
-$bookURL='http://'.$_SERVER['SERVER_NAME'].preg_replace('/\/[^\/]+\.[^\/]+$/', '/', $_SERVER['REQUEST_URI']);
+$bookURL='http'.$https_enabled.'://'.$_SERVER['SERVER_NAME'].preg_replace('/\/[^\/]+\.[^\/]+$/', '/', $_SERVER['REQUEST_URI']);
 //echo $bookURL;
 // name your feed
 $feedTitle=basename($bookDirectory);
 //echo $feedTitle;
 // where every entry in your feed will link to, sort of like a "for more info" link
-$feedLink='http://'.$_SERVER['SERVER_NAME'].preg_replace('/\/[^\/]+\.[^\/]+$/', '/', $_SERVER['REQUEST_URI']);
+$feedLink='http'.$https_enabled.'://'.$_SERVER['SERVER_NAME'].preg_replace('/\/[^\/]+\.[^\/]+$/', '/', $_SERVER['REQUEST_URI']);
 //echo feedLink;
 // describe your feed
 $feedDescription="AudioBook";
