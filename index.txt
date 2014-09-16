@@ -45,8 +45,9 @@ echo "<?xml version=\"1.0\" encoding=\"utf-8\"?>\r";
     <copyright><? echo $feedCopyright; ?></copyright>
     <ttl><? echo $ttl; ?></ttl>
     <image>
-        <title>AudioBook</title>
+        <title><? echo $feedTitle; ?></title>
         <url><? echo $bookURL . 'folder.jpg'?></url>
+        <link><? echo $feedLink; ?></link>
     </image>
 
 <?php
