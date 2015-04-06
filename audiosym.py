@@ -16,6 +16,7 @@ class audiosym():
 
     def findBookDetails(self, source):
         #print getSourceFileList(args.source)
+        print "################################################################"
         print "\nsearching for {}".format(os.path.basename(source))
         bookIndex = 0
         bookTitle = os.path.basename(source)
@@ -96,7 +97,7 @@ class audiosym():
                 index + 1)
         print "index.php -> {}".format(scriptPath)
         proceed = raw_input("Do you want to continue? yes/[no]: ")
-        if proceed == "yes":
+        if proceed == "yes" or proceed == "":
             return True
         else:
             return False
@@ -115,7 +116,6 @@ class audiosym():
                 if os.path.exists(scriptPath):
                     os.symlink(scriptPath, "{}/{}/{}".format(args.destination.rstrip('/'), prepend + self.cleanTitle(bookDetails["title"]) + ":" + self.cleanTitle(bookDetails["author"]), "index.php"))
                 print "symlinks created"
-                print "thank you for using audiosym"
                 return True
         else:
             print "the following directory already exists {}/{}".format(args.destination.rstrip('/'), prepend + self.cleanTitle(bookDetails["title"]) + ":" + self.cleanTitle(bookDetails["author"]))
