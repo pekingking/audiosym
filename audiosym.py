@@ -96,7 +96,7 @@ class audiosym():
             print "{}.%03d{} -> {}".format(self.cleanTitle(bookDetails["title"]), os.path.splitext(file)[1], file) % (
                 index + 1)
         print "index.php -> {}".format(scriptPath)
-        proceed = raw_input("Do you want to continue? yes/[no]: ")
+        proceed = raw_input("Do you want to continue? [yes]/no: ")
         if proceed == "yes" or proceed == "":
             return True
         else:
