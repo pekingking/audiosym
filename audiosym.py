@@ -23,7 +23,8 @@ class audiosym():
         print "\nsearch term = {}".format(self.cleanTitle(bookTitle))
         while True:
             bookDetails = self.getBookInfo(bookTitle, bookIndex)
-            print "Found {} by {} published in {}".format(bookDetails["title"], bookDetails["author"], bookDetails["date"])
+            print "Found {} by {}".format(bookDetails["title"], bookDetails["author"], bookDetails["date"])
+            print "Folder would look like {}:{}'.format(audiosymlink.cleanTitle(bookDetails["title"]), audiosymlink.cleanTitle(bookDetails["author"]))
             correctBook = raw_input("would you like to continue? [yes]/no/next/search/manual: ")
             if correctBook == "next":
                 bookIndex += 1
@@ -180,7 +181,7 @@ class audiosym():
                     else:
                         print "no title found"
                     if author:
-                        bookDetails["author"]
+                        bookDetails["author"] = author
                     else:
                         print "no author found"
                     return bookDetails
