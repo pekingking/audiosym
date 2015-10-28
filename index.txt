@@ -32,51 +32,37 @@ $ttl = 9999;
 
 // END OF STUFF YOU NEED TO CONFIGURE!
 
-echo "<?xml version=\"1.0\" encoding=\"utf-8\"?>\r";
-?>
-
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
-  <channel>
-    <atom:link href="<? echo $feedLink; ?>" rel="self" type="application/rss+xml" />
-    <title><? echo $feedTitle; ?></title>
-    <link><? echo $feedLink; ?></link>
-    <description><? echo $feedDescription; ?></description>
-    <language>en</language>
-    <copyright><? echo $feedCopyright; ?></copyright>
-    <ttl><? echo $ttl; ?></ttl>
-    <image>
-        <title><? echo $feedTitle; ?></title>
-        <url><? echo $bookURL . 'folder.jpg'?></url>
-        <link><? echo $feedLink; ?></link>
-    </image>
-
-<?php
+echo '<?xml version="1.0" encoding="utf-8"?>'."\r\n";
+echo '<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">'."\r\n";
+echo "  <channel>\r\n";
+echo '    <atom:link href="' . $feedLink . '" rel="self" type="application/rss+xml" />'."\r\n";
+echo "    <title>$feedTitle</title>\r\n";
+echo "    <link>$feedLink</link>\r\n";
+echo "    <description>$feedDescription</description>\r\n";
+echo "    <language>en</language>\r\n";
+echo "    <copyright>$feedCopyright</copyright>\r\n";
+echo "    <ttl>$ttl</ttl>\r\n";
+echo "    <image>\r\n";
+echo "        <title>$feedTitle</title>\r\n";
+echo "        <url>".$bookURL."folder.jpg</url>\r\n";
+echo "        <link>$feedLink</link>\r\n";
+echo "    </image>\r\n";
 // step through each item...
     $files = scandir(getcwd(), 1);
     foreach ($files as $thisFile)
-    //$fileDir = opendir($bookDirectory) or die ($php_errormsg);
-    //while (false !== ($thisFile = readdir($fileDir))) // step through book directory
     {
-        $thisFilePath = $bookDirectory . $thisFile;
-        //echo 'file'.$thisFilePath.'::';
+        $thisFilePath = $bookDirectory ."/". $thisFile;
             if (preg_match("/\.(mp3|m4b|m4a|acc)$/i", $thisFilePath)) //(is_file($thisFilePath) && strrchr ($thisFilePath, '.') == ".mp3") // not . or .., ends in .mp3
             {
-                // only include files that have a corresponding .txt file
-                //$thisTextPath = substr_replace($thisFilePath, ".txt", (strlen($thisFilePath) - 4));
-                //if (is_file($thisTextPath))
-                //{
                     $myFullURL=$bookURL . $thisFile;
-                    $myFileSize=filesize($thisFilePath);
-                  ?>
-      <item>
-        <title><? echo $thisFile; ?></title>
-        <link><? echo $feedLink; ?></link>
-        <description><?echo $thisFile ?></description>
-        <enclosure url="<? echo $myFullURL; ?>" length="<? echo $myFileSize; ?>" type="audio/mpeg" />
-        <guid><? echo $myFullURL; ?></guid>
-      </item>
-<?
-                //}
+            $fileLength = trim(shell_exec('~/bin/ffmpeg -i "'.$thisFilePath.'" 2>&1 | grep Duration | '."sed 's/Duration: \(.*\), start/\\1/g' | grep -iEo ".'"[0-9][0-9]:[0-9][0-9]:[0-9][0-9]"'."  | awk -F: '{ print ($1 * 3600) + ($2 * 60) + $3 }'"));
+            echo "    <item>\r\n";
+                echo "        <title>$thisFile</title>\r\n";
+                echo "        <link>$feedLink</link>\r\n";
+                echo "        <description>$thisFile</description>\r\n";
+                echo '        <enclosure url="'.$myFullURL.'" length="'.$fileLength.'" type="audio/mpeg" />'."\r\n";
+                echo "        <guid>$myFullURL</guid>\r\n";
+                echo "    </item>\r\n";
             }
     }
     closedir($fileDir);
