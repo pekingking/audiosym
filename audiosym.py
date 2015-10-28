@@ -173,7 +173,7 @@ class audiosym():
             bookDetails["date"] = ""
             bookDetails["description"] = ""
             bookDetails["thumbnailURL"] = ""
-            if "results" in info and "richSnippet" in info["results"][0] and "metatags" in info["results"][0]["richSnippet"] and "twitterTitle" in info["results"][0]["richSnippet"]["metatags"]:
+            if "results" in info and info["results"] and "richSnippet" in info["results"][0] and "metatags" in info["results"][0]["richSnippet"] and "twitterTitle" in info["results"][0]["richSnippet"]["metatags"]:
                 if info["results"][0]["richSnippet"]["metatags"]["twitterTitle"].find(" by "):
                     title, author = info["results"][0]["richSnippet"]["metatags"]["twitterTitle"].rsplit(" by ", 1)
                     if title:
