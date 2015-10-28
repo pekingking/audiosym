@@ -24,7 +24,7 @@ class audiosym():
         while True:
             bookDetails = self.getBookInfo(bookTitle, bookIndex)
             print "Found {} by {}".format(bookDetails["title"], bookDetails["author"], bookDetails["date"])
-            print "Folder would look like {}:{}".format(audiosymlink.cleanTitle(bookDetails["title"]), audiosymlink.cleanTitle(bookDetails["author"]))
+            print "Folder would look like {}:{}".format(cleanTitle(bookDetails["title"]), cleanTitle(bookDetails["author"]))
             correctBook = raw_input("would you like to continue? [yes]/no/next/search/manual: ")
             if correctBook == "next":
                 bookIndex += 1
