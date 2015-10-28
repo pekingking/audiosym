@@ -162,50 +162,75 @@ class audiosym():
             return
 
     def getBookInfo(self, title, bookIndex=0):
-        """pull book information from books.google.com api and return a dictionary"""
-        request = requests.get(
-            "https://www.googleapis.com/books/v1/volumes?&printType=books&q={}&startIndex={}".format(self.cleanTitle(title).replace(".", " "), str(bookIndex)))
+        """pull title information from custome google search on libraryofthings and return a dictionary"""
+        request = requests.get("https://www.googleapis.com/customsearch/v1element?key=AIzaSyCVAXiUzRYsML1Pv6RwSG1gunmMikTzQqY&rsz=filtered_cse&num=1&hl=en&prettyPrint=false&cx=003480712083187615526:3bc2u714j5u&q={}&start={}".format(self.cleanTitle(title).replace(".", " "), str(bookIndex)))
         if request.status_code == 200 and len(request.text) > 0:
-            books = request.json()
+            info = request.json()
             bookDetails = dict()
-            if "items" in books and "volumeInfo" in books["items"][0]:
-                #print books["items"][0]["volumeInfo"]
-                if "title" in books["items"][0]["volumeInfo"]:
-                    bookDetails["title"] = books["items"][0]["volumeInfo"]["title"]
-                else:
-                    print "no title found"
-                    bookDetails["title"] = "NOT FOUND"
-                if "authors" in books["items"][0]["volumeInfo"]:
-                    bookDetails["author"] = books["items"][0]["volumeInfo"]["authors"][0]
-                else:
-                    print "no title found"
-                    bookDetails["author"] = "NOT FOUND"
-                if "publishedDate" in books["items"][0]["volumeInfo"]:
-                    bookDetails["date"] = books["items"][0]["volumeInfo"]["publishedDate"]
-                else:
-                    bookDetails["date"] = ""
-                if "description" in books["items"][0]["volumeInfo"]:
-                    bookDetails["description"] = books["items"][0]["volumeInfo"]["description"]
-                else:
-                    bookDetails["description"] = ""
-                if "imageLinks" in books["items"][0]["volumeInfo"] and "thumbnail" in books["items"][0]["volumeInfo"]["imageLinks"]:
-                    bookDetails["thumbnailURL"] = books["items"][0]["volumeInfo"]["imageLinks"]["thumbnail"]
-                else:
-                    bookDetails["thumbnailURL"] = ""
-                #print "title: {}".format(bookDetails["title"])
-                #print "author: {}".format(bookDetails["author"])
-                #print "date: {}".format(bookDetails["date"])
-                #print "description: {}".format(unicode(bookDetails["description"], "utf8"))
-                #print "thumbnail: {}".format(bookDetails["thumbnailURL"])
-                return bookDetails
-        print "Google API search came back empty"
-        bookDetails = dict()
-        bookDetails["title"] = "NOT FOUND"
-        bookDetails["author"] = "NOT FOUND"
-        bookDetails["date"] = ""
-        bookDetails["description"] = ""
-        bookDetails["thumbnailURL"] = ""
+            bookDetails["title"] = "NOT FOUND"
+            bookDetails["author"] = "NOT FOUND"
+            bookDetails["date"] = ""
+            bookDetails["description"] = ""
+            bookDetails["thumbnailURL"] = ""
+            if "results" in info and "richSnippet" in info["results"][0] and "metatags" in info["results"][0]["richSnippet"] and "twitterTitle" in info["results"][0]["metatags"]:
+                if ["results"][0]["richSnippet"]["metatags"]["twitterTitle"].find(" by "):
+                    title, author = ["results"][0]["richSnippet"]["metatags"]["twitterTitle"].rsplit(" by ", 1)
+                    if title:
+                        bookDetails["title"] = title
+                    else:
+                        print "no title found"
+                    if author:
+                        bookDetails["author"]
+                    else:
+                        print "no author found"
+                    return bookDetails
+        print "problem finding book"
         return bookDetails
+
+    # def getBookInfo(self, title, bookIndex=0):
+    #     """pull book information from books.google.com api and return a dictionary"""
+    #     request = requests.get("https://www.googleapis.com/books/v1/volumes?&printType=books&q={}&startIndex={}".format(self.cleanTitle(title).replace(".", " "), str(bookIndex)))
+    #     if request.status_code == 200 and len(request.text) > 0:
+    #         books = request.json()
+    #         bookDetails = dict()
+    #         if "items" in books and "volumeInfo" in books["items"][0]:
+    #             #print books["items"][0]["volumeInfo"]
+    #             if "title" in books["items"][0]["volumeInfo"]:
+    #                 bookDetails["title"] = books["items"][0]["volumeInfo"]["title"]
+    #             else:
+    #                 print "no title found"
+    #                 bookDetails["title"] = "NOT FOUND"
+    #             if "authors" in books["items"][0]["volumeInfo"]:
+    #                 bookDetails["author"] = books["items"][0]["volumeInfo"]["authors"][0]
+    #             else:
+    #                 print "no title found"
+    #                 bookDetails["author"] = "NOT FOUND"
+    #             if "publishedDate" in books["items"][0]["volumeInfo"]:
+    #                 bookDetails["date"] = books["items"][0]["volumeInfo"]["publishedDate"]
+    #             else:
+    #                 bookDetails["date"] = ""
+    #             if "description" in books["items"][0]["volumeInfo"]:
+    #                 bookDetails["description"] = books["items"][0]["volumeInfo"]["description"]
+    #             else:
+    #                 bookDetails["description"] = ""
+    #             if "imageLinks" in books["items"][0]["volumeInfo"] and "thumbnail" in books["items"][0]["volumeInfo"]["imageLinks"]:
+    #                 bookDetails["thumbnailURL"] = books["items"][0]["volumeInfo"]["imageLinks"]["thumbnail"]
+    #             else:
+    #                 bookDetails["thumbnailURL"] = ""
+    #             #print "title: {}".format(bookDetails["title"])
+    #             #print "author: {}".format(bookDetails["author"])
+    #             #print "date: {}".format(bookDetails["date"])
+    #             #print "description: {}".format(unicode(bookDetails["description"], "utf8"))
+    #             #print "thumbnail: {}".format(bookDetails["thumbnailURL"])
+    #             return bookDetails
+    #     print "Google API search came back empty"
+    #     bookDetails = dict()
+    #     bookDetails["title"] = "NOT FOUND"
+    #     bookDetails["author"] = "NOT FOUND"
+    #     bookDetails["date"] = ""
+    #     bookDetails["description"] = ""
+    #     bookDetails["thumbnailURL"] = ""
+    #     return bookDetails
 
     def findBookImageURL(self, title, series=False):
         if series:
