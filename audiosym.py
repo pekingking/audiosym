@@ -7,6 +7,7 @@ import requests
 import sys
 import logging
 import config
+import readline
 import sys
 reload(sys)
 sys.setdefaultencoding("utf-8")
@@ -25,7 +26,8 @@ class audiosym():
         print "\nsearch term = {}".format(self.cleanTitle(bookTitle))
         while True:
             bookDetails = self.getBookInfo(bookTitle, bookIndex)
-            print "Found {} by {}".format(bookDetails["title"], bookDetails["author"], bookDetails["date"])
+            print "Found {} by {} released on {}".format(bookDetails["title"], bookDetails["author"], bookDetails["date"])
+            print "https://www.goodreads.com/book/show/{}".format(bookDetails["goodreadsID"])
             print "Folder would look like {}:{}".format(self.cleanTitle(bookDetails["title"]), self.cleanTitle(bookDetails["author"]))
             correctBook = raw_input("would you like to continue? [yes]/no/next/search/manual/modify: ")
             if correctBook == "next":
