@@ -6,7 +6,7 @@ import fnmatch
 import requests
 import sys
 import logging
-import config.py
+import config
 import sys
 reload(sys)
 sys.setdefaultencoding("utf-8")
@@ -46,19 +46,18 @@ class audiosym():
                     bookDetails["date"] = ""
                     bookDetails["description"] = ""
                     bookDetails["thumbnailURL"] = ""
-                    bookDetails["goodreadsID"] = "0"
+                    bookDetails["goodreadsID"] = bookID
                     return bookDetails
                 else:
                     print "no title provided or author"
                     return
             elif correctBook == "modify":
-                bookTitle = self.input("what would you like to call the book?", bookDetails["title"])
-                bookAuthor = self.input("who wrote this book?", bookDetails["author"])
-                bookID = self.input("Goodreads ID: ", bookDetails["goodreadsID"])
+                bookTitle = self.input("title: ", bookDetails["title"])
+                bookAuthor = self.input("author:  ", bookDetails["author"])
+                bookID = self.input("goodreads id: ", bookDetails["goodreadsID"])
                 if bookTitle and bookAuthor and bookID:
                     bookDetails = dict()
                     bookDetails["title"] = bookTitle
-                    #TODO manual the rest of the stuff
                     bookDetails["author"] = bookAuthor
                     bookDetails["goodreadsID"] = bookID
                     bookDetails["date"] = ""
