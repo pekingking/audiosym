@@ -227,10 +227,10 @@ class audiosym():
             else:
                 print "no title found"
             if "results" in info and info["results"] and "content" in info["results"][0]:
-                date = regex.findall("^(\w+\s+\d+,\s+\d+)", info["results"][0]["content"])
+                date = re.findall("^(\w+\s+\d+,\s+\d+)", info["results"][0]["content"])
                 if date:
                     bookDetails["date"] = date[0]
-            bookid = regex.search("(?:https?://www.goodreads.com/book/show/(\d+))",request.text)
+            bookid = re.search("(?:https?://www.goodreads.com/book/show/(\d+))",request.text)
             if bookid:
                 bookDetails["goodreadsID"] = bookid.group(1)
             else:
