@@ -210,7 +210,7 @@ class audiosym():
 
     def getBookInfo(self, title, bookIndex=0):
         """get goodreadsID"""
-        request = requests.get("https://www.googleapis.com/customsearch/v1element?key=AIzaSyCVAXiUzRYsML1Pv6RwSG1gunmMikTzQqY&num=1&hl=en&prettyPrint=true&cx=003836925080131241610:4lgjbsogluc&q={}&start={}".format(self.cleanTitle(title).repalce('.', '+'), str(bookIndex)))
+        request = requests.get("https://www.googleapis.com/customsearch/v1element?key=AIzaSyCVAXiUzRYsML1Pv6RwSG1gunmMikTzQqY&num=1&hl=en&prettyPrint=true&cx=003836925080131241610:4lgjbsogluc&q={}&start={}".format(self.cleanTitle(title).replace('.', '+'), str(bookIndex)))
         if request.status_code == 200 and len(request.text) > 0:
             info = request.json()
             bookDetails = dict()
