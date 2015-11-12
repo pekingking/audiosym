@@ -1,3 +1,4 @@
+from rauth.service import OAuth1Service, OAuth1Session
 import argparse
 import os
 import re
@@ -5,6 +6,7 @@ import fnmatch
 import requests
 import sys
 import logging
+import config.py
 import sys
 reload(sys)
 sys.setdefaultencoding("utf-8")
@@ -25,21 +27,40 @@ class audiosym():
             bookDetails = self.getBookInfo(bookTitle, bookIndex)
             print "Found {} by {}".format(bookDetails["title"], bookDetails["author"], bookDetails["date"])
             print "Folder would look like {}:{}".format(self.cleanTitle(bookDetails["title"]), self.cleanTitle(bookDetails["author"]))
-            correctBook = raw_input("would you like to continue? [yes]/no/next/search/manual: ")
+            correctBook = raw_input("would you like to continue? [yes]/no/next/search/manual/modify: ")
             if correctBook == "next":
                 bookIndex += 1
             elif correctBook == "search":
                 bookTitle = raw_input("what book are you looking for? ")
                 bookIndex = 0
             elif correctBook == "manual":
-                bookTitle = raw_input("what would you like to call the book?")
-                bookAuthor = raw_input("who wrote this book?")
+                bookTitle = raw_input("what would you like to call the book? ")
+                bookAuthor = raw_input("who wrote this book? ")
+                bookID = raw_input("what is the goodreads id? ")
                 bookIndex = 0
-                if bookTitle and bookAuthor:
+                if bookTitle and bookAuthor and bookID:
                     bookDetails = dict()
                     bookDetails["title"] = bookTitle
                     #TODO manual the rest of the stuff
                     bookDetails["author"] = bookAuthor
+                    bookDetails["date"] = ""
+                    bookDetails["description"] = ""
+                    bookDetails["thumbnailURL"] = ""
+                    bookDetails["goodreadsID"] = "0"
+                    return bookDetails
+                else:
+                    print "no title provided or author"
+                    return
+            elif correctBook == "modify":
+                bookTitle = self.input("what would you like to call the book?", bookDetails["title"])
+                bookAuthor = self.input("who wrote this book?", bookDetails["author"])
+                bookID = self.input("Goodreads ID: ", bookDetails["goodreadsID"])
+                if bookTitle and bookAuthor and bookID:
+                    bookDetails = dict()
+                    bookDetails["title"] = bookTitle
+                    #TODO manual the rest of the stuff
+                    bookDetails["author"] = bookAuthor
+                    bookDetails["goodreadsID"] = bookID
                     bookDetails["date"] = ""
                     bookDetails["description"] = ""
                     bookDetails["thumbnailURL"] = ""
@@ -162,31 +183,78 @@ class audiosym():
             print "Directory does not exist: " + directory
             return
 
+    # def getBookInfo(self, title, bookIndex=0):
+    #     """pull title information from custome google search on libraryofthings and return a dictionary"""
+    #     request = requests.get("https://www.googleapis.com/customsearch/v1element?key=AIzaSyCVAXiUzRYsML1Pv6RwSG1gunmMikTzQqY&rsz=filtered_cse&num=1&hl=en&prettyPrint=false&cx=003480712083187615526:3bc2u714j5u&q={}&start={}".format(self.cleanTitle(title).replace(".", " "), str(bookIndex)))
+    #     if request.status_code == 200 and len(request.text) > 0:
+    #         info = request.json()
+    #         bookDetails = dict()
+    #         bookDetails["title"] = "NOT FOUND"
+    #         bookDetails["author"] = "NOT FOUND"
+    #         bookDetails["date"] = ""
+    #         bookDetails["description"] = ""
+    #         bookDetails["thumbnailURL"] = ""
+    #         if "results" in info and info["results"] and "richSnippet" in info["results"][0] and "metatags" in info["results"][0]["richSnippet"] and "twitterTitle" in info["results"][0]["richSnippet"]["metatags"]:
+    #             if info["results"][0]["richSnippet"]["metatags"]["twitterTitle"].find(" by "):
+    #                 title, author = info["results"][0]["richSnippet"]["metatags"]["twitterTitle"].rsplit(" by ", 1)
+    #                 if title:
+    #                     bookDetails["title"] = title
+    #                 else:
+    #                     print "no title found"
+    #                 if author:
+    #                     bookDetails["author"] = author
+    #                 else:
+    #                     print "no author found"
+    #                 return bookDetails
+    #     print "problem finding book"
+    #     return bookDetails
+
     def getBookInfo(self, title, bookIndex=0):
-        """pull title information from custome google search on libraryofthings and return a dictionary"""
-        request = requests.get("https://www.googleapis.com/customsearch/v1element?key=AIzaSyCVAXiUzRYsML1Pv6RwSG1gunmMikTzQqY&rsz=filtered_cse&num=1&hl=en&prettyPrint=false&cx=003480712083187615526:3bc2u714j5u&q={}&start={}".format(self.cleanTitle(title).replace(".", " "), str(bookIndex)))
+        """get goodreadsID"""
+        request = requests.get("https://www.googleapis.com/customsearch/v1element?key=AIzaSyCVAXiUzRYsML1Pv6RwSG1gunmMikTzQqY&num=1&hl=en&prettyPrint=true&cx=003836925080131241610:4lgjbsogluc&q={}&start={}".format(self.cleanTitle(title).repalce('.', '+'), str(bookIndex)))
         if request.status_code == 200 and len(request.text) > 0:
             info = request.json()
             bookDetails = dict()
             bookDetails["title"] = "NOT FOUND"
             bookDetails["author"] = "NOT FOUND"
+            bookDetails["goodreadsID"] = "0"
             bookDetails["date"] = ""
-            bookDetails["description"] = ""
-            bookDetails["thumbnailURL"] = ""
-            if "results" in info and info["results"] and "richSnippet" in info["results"][0] and "metatags" in info["results"][0]["richSnippet"] and "twitterTitle" in info["results"][0]["richSnippet"]["metatags"]:
-                if info["results"][0]["richSnippet"]["metatags"]["twitterTitle"].find(" by "):
-                    title, author = info["results"][0]["richSnippet"]["metatags"]["twitterTitle"].rsplit(" by ", 1)
-                    if title:
-                        bookDetails["title"] = title
-                    else:
-                        print "no title found"
-                    if author:
-                        bookDetails["author"] = author
-                    else:
-                        print "no author found"
-                    return bookDetails
+            if "results" in info and info["results"] and "richSnippet" in info["results"][0] and "person" in info["results"][0]["richSnippet"] and "name" in info["results"][0]["richSnippet"]["person"]:
+                bookDetails["author"] = info["results"][0]["richSnippet"]["person"]["name"]
+            else:
+                print "no author found"
+            if "results" in info and info["results"] and "richSnippet" in info["results"][0] and "book" in info["results"][0]["richSnippet"] and "name" in info["results"][0]["richSnippet"]["book"]:
+                bookDetails["title"] = info["results"][0]["richSnippet"]["book"]["name"]
+            else:
+                print "no title found"
+            if "results" in info and info["results"] and "content" in info["results"][0]:
+                date = regex.findall("^(\w+\s+\d+,\s+\d+)", info["results"][0]["content"])
+                if date:
+                    bookDetails["date"] = date[0]
+            bookid = regex.search("(?:https?://www.goodreads.com/book/show/(\d+))",request.text)
+            if bookid:
+                bookDetails["goodreadsID"] = bookid.group(1)
+            else:
+                print "no bookid found"
+            return bookDetails
         print "problem finding book"
         return bookDetails
+
+
+    def addToGoodreads(self, id):
+        # Get a real consumer key & secret from: http://www.goodreads.com/api/keys
+        new_session = OAuth1Session(
+            consumer_key=config.CONSUMER_KEY,
+            consumer_secret=config.CONSUMER_SECRET,
+            access_token=config.ACCESS_TOKEN,
+            access_token_secret=config.ACCESS_TOKEN_SECRET,
+        )
+        data = {'name': 'to-read', 'book_id': int(id)}
+        response = new_session.post('http://www.goodreads.com/shelf/add_to_shelf.xml', data)
+        if response.status_code != 201:
+            print "could not add id to bookshelf: " + id + "    status code:" + str(response.status_code)
+        else:
+            print 'Book added to goodreads bookshelf: ' + id
 
     # def getBookInfo(self, title, bookIndex=0):
     #     """pull book information from books.google.com api and return a dictionary"""
@@ -265,6 +333,12 @@ class audiosym():
         logging.error("the path provided does not exist: {}".format(path))
         return False
 
+    def input(self, prompt, prefill=''):
+       readline.set_startup_hook(lambda: readline.insert_text(prefill))
+       try:
+          return raw_input(prompt)
+       finally:
+          readline.set_startup_hook()
 
 def main():
     parser = argparse.ArgumentParser()
