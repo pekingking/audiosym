@@ -59,11 +59,15 @@ class audiosym():
                 bookTitle = self.input("title: ", bookDetails["title"])
                 bookAuthor = self.input("author:  ", bookDetails["author"])
                 bookID = self.input("goodreads id: ", bookDetails["goodreadsID"])
+                bookSeries = self.input("goodreads id: ", bookDetails["series"])
+                bookSeriesNumber = self.input("goodreads id: ", bookDetails["seriesNumber"])
                 if bookTitle and bookAuthor and bookID:
                     bookDetails = dict()
                     bookDetails["title"] = bookTitle
                     bookDetails["author"] = bookAuthor
                     bookDetails["goodreadsID"] = bookID
+                    bookDetails["series"] = bookSeries
+                    bookDetails["seriesNumber"] = bookSeriesNumber
                     bookDetails["date"] = ""
                     bookDetails["description"] = ""
                     bookDetails["thumbnailURL"] = ""
@@ -113,7 +117,7 @@ class audiosym():
         print "\n"
         print "planning on creating the following directory and symlinks:"
         print "source:      {}".format(args.source)
-        print "destination: {}/{}".format(args.destination.rstrip('/'), prepend + self.cleanTitle(bookDetails["title"]) + ":" + self.cleanTitle(bookDetails["author"]))
+        print "destination: {}/{}{}{}:{}".format(args.destination.rstrip('/'), self.cleanTitle(bookDetails["series"]) + "/" if bookDetails["series"] else "",self.cleanTitle(bookDetails["seriesNumber"]) + "." if bookDetails["seriesNumber"] else "", self.cleanTitle(bookDetails["title"]), self.cleanTitle(bookDetails["author"]))
         print ""
         print "planning on creating the following symlinks"
         print "symlink -> file"
@@ -128,22 +132,22 @@ class audiosym():
             return False
 
     def createSymlinks(self, args, bookDetails, scriptPath, orderedFileList, prepend=""):
-        if not os.path.exists("{}/{}".format(args.destination.rstrip('/'), prepend + self.cleanTitle(bookDetails["title"]) + ":" + self.cleanTitle(bookDetails["author"]))):
+        if not os.path.exists("{}/{}{}{}:{}".format(args.destination.rstrip('/'), self.cleanTitle(bookDetails["series"]) + "/" if bookDetails["series"] else "",self.cleanTitle(bookDetails["seriesNumber"]) + "." if bookDetails["seriesNumber"] else "", self.cleanTitle(bookDetails["title"]), self.cleanTitle(bookDetails["author"]))):
             print "creating directory"
-            os.mkdir("{}/{}".format(args.destination.rstrip('/'), prepend + self.cleanTitle(bookDetails["title"]) + ":" + self.cleanTitle(bookDetails["author"])))
-            if os.path.exists("{}/{}".format(args.destination.rstrip('/'), prepend + self.cleanTitle(bookDetails["title"]) + ":" + self.cleanTitle(bookDetails["author"]))):
+            os.mkdir("{}/{}{}{}:{}".format(args.destination.rstrip('/'), self.cleanTitle(bookDetails["series"]) + "/" if bookDetails["series"] else "",self.cleanTitle(bookDetails["seriesNumber"]) + "." if bookDetails["seriesNumber"] else "", self.cleanTitle(bookDetails["title"]), self.cleanTitle(bookDetails["author"])))
+            if os.path.exists("{}/{}{}{}:{}".format(args.destination.rstrip('/'), self.cleanTitle(bookDetails["series"]) + "/" if bookDetails["series"] else "",self.cleanTitle(bookDetails["seriesNumber"]) + "." if bookDetails["seriesNumber"] else "", self.cleanTitle(bookDetails["title"]), self.cleanTitle(bookDetails["author"]))):
                 print "directory created"
-                os.chdir("{}/{}".format(args.destination.rstrip('/'), prepend + self.cleanTitle(bookDetails["title"]) + ":" + self.cleanTitle(bookDetails["author"])))
+                os.chdir("{}/{}{}{}:{}".format(args.destination.rstrip('/'), self.cleanTitle(bookDetails["series"]) + "/" if bookDetails["series"] else "",self.cleanTitle(bookDetails["seriesNumber"]) + "." if bookDetails["seriesNumber"] else "", self.cleanTitle(bookDetails["title"]), self.cleanTitle(bookDetails["author"])))
                 print "creating symlinks"
                 for index, file in enumerate(orderedFileList):
-                    os.symlink("{}/{}".format(args.source.rstrip('/'), file), "{}/{}/{}.%03d{}".format(args.destination.rstrip('/'), prepend + self.cleanTitle(bookDetails["title"]) + ":" + self.cleanTitle(bookDetails["author"]), self.cleanTitle(bookDetails["title"]), os.path.splitext(file)[1]) % (index + 1))
+                    os.symlink("{}/{}".format(args.source.rstrip('/'), file), "{}/{}{}{}:{}/{}.%03d{}".format(args.destination.rstrip('/'), self.cleanTitle(bookDetails["series"]) + "/" if bookDetails["series"] else "",self.cleanTitle(bookDetails["seriesNumber"]) + "." if bookDetails["seriesNumber"] else "", self.cleanTitle(bookDetails["title"]), self.cleanTitle(bookDetails["author"]), self.cleanTitle(bookDetails["title"]), os.path.splitext(file)[1]) % (index + 1))
                 #Symlinks the index.txt to index.php in the new audiobook directory
                 if os.path.exists(scriptPath):
-                    os.symlink(scriptPath, "{}/{}/{}".format(args.destination.rstrip('/'), prepend + self.cleanTitle(bookDetails["title"]) + ":" + self.cleanTitle(bookDetails["author"]), "index.php"))
+                    os.symlink(scriptPath, "{}/{}{}{}:{}/{}".format(args.destination.rstrip('/'), self.cleanTitle(bookDetails["series"]) + "/" if bookDetails["series"] else "",self.cleanTitle(bookDetails["seriesNumber"]) + "." if bookDetails["seriesNumber"] else "", self.cleanTitle(bookDetails["title"]), self.cleanTitle(bookDetails["author"]), "index.php"))
                 print "symlinks created"
                 return True
         else:
-            print "the following directory already exists {}/{}".format(args.destination.rstrip('/'), prepend + self.cleanTitle(bookDetails["title"]) + ":" + self.cleanTitle(bookDetails["author"]))
+            print "the following directory already exists: {}/{}{}{}:{}".format(args.destination.rstrip('/'), self.cleanTitle(bookDetails["series"]) + "/" if bookDetails["series"] else "",self.cleanTitle(bookDetails["seriesNumber"]) + "." if bookDetails["seriesNumber"] else "", self.cleanTitle(bookDetails["title"]), self.cleanTitle(bookDetails["author"]))
             return False
 
     def cleanTitle(self, title):
@@ -388,7 +392,7 @@ def main():
     if not url:
         logging.error("could not find url")
     else:
-        audiosymlink.saveImage(url, "{}/{}".format(args.destination.rstrip('/'), folder), 'folder.jpg')
+        audiosymlink.saveImage(url, "{}/{}{}{}:{}".format(args.destination.rstrip('/'), self.cleanTitle(bookDetails["series"]) + "/" if bookDetails["series"] else "",self.cleanTitle(bookDetails["seriesNumber"]) + "." if bookDetails["seriesNumber"] else "", self.cleanTitle(bookDetails["title"]), self.cleanTitle(bookDetails["author"])), 'folder.jpg')
 
 if __name__ == '__main__':
     main()
