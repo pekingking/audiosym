@@ -392,7 +392,7 @@ def main():
     if not url:
         logging.error("could not find url")
     else:
-        audiosymlink.saveImage(url, "{}/{}{}{}:{}".format(args.destination.rstrip('/'), self.cleanTitle(bookDetails["series"]) + ":" + self.cleanTitle(bookDetails["author"]) + "/" if bookDetails["series"] else "", self.cleanTitle(bookDetails["seriesNumber"]) + "." if bookDetails["seriesNumber"] else "", self.cleanTitle(bookDetails["title"]), self.cleanTitle(bookDetails["author"])), 'folder.jpg')
+        audiosymlink.saveImage(url, "{}/{}{}{}:{}".format(args.destination.rstrip('/'), audiosymlink.cleanTitle(bookDetails["series"]) + ":" + audiosymlink.cleanTitle(bookDetails["author"]) + "/" if bookDetails["series"] else "", audiosymlink.cleanTitle(bookDetails["seriesNumber"]) + "." if bookDetails["seriesNumber"] else "", audiosymlink.cleanTitle(bookDetails["title"]), audiosymlink.cleanTitle(bookDetails["author"])), 'folder.jpg')
 
 if __name__ == '__main__':
     main()
