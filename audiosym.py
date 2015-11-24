@@ -265,9 +265,9 @@ class audiosym():
         data = {'name': 'to-read', 'book_id': int(id)}
         response = new_session.post('http://www.goodreads.com/shelf/add_to_shelf.xml', data)
         if response.status_code != 201:
-            print "could not add id to bookshelf: " + id + "    status code:" + str(response.status_code)
+            print "could not add id to bookshelf: " + str(id) + "    status code:" + str(response.status_code)
         else:
-            print 'Book added to goodreads bookshelf: ' + id
+            print 'Book added to goodreads bookshelf: ' + str(id)
 
     # def getBookInfo(self, title, bookIndex=0):
     #     """pull book information from books.google.com api and return a dictionary"""
@@ -386,6 +386,10 @@ def main():
     symlinkCreate = audiosymlink.createSymlinks(args, bookDetails, scriptPath, orderedFileList, args.prepend)
     if not symlinkCreate:
         sys.exit()
+    #add book to goodreads
+    if int(bookDetails["goodreadsID"]) > 0:
+        print "Adding book to goodreads"
+        audiosymlink.addToGoodreads(int(bookDetails["goodreadsID"]))
     #make sure we are not overwriting something
     folder = '{}:{}'.format(audiosymlink.cleanTitle(bookDetails["title"]), audiosymlink.cleanTitle(bookDetails["author"]))
     url = audiosymlink.findBookImageURL(folder)
