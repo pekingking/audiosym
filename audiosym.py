@@ -30,7 +30,7 @@ class audiosym():
             if bookDetails["series"] and bookDetails["seriesNumber"]:
                 print "Book {} in {}".format(bookDetails["seriesNumber"], bookDetails["series"])
             print "https://www.goodreads.com/book/show/{}".format(bookDetails["goodreadsID"])
-            print "Folder would look like {}{}:{}".format(self.cleanTitle(bookDetails["series"]) + "/" if bookDetails["series"] else "",self.cleanTitle(bookDetails["seriesNumber"] + bookDetails["title"]), self.cleanTitle(bookDetails["author"]))
+            print "Folder would look like {}{}{}:{}".format(self.cleanTitle(bookDetails["series"]) + "/" if bookDetails["series"] else "",self.cleanTitle(bookDetails["seriesNumber"]) + "." if bookDetails["seriesNumber"] else "", self.cleanTitle(bookDetails["title"]), self.cleanTitle(bookDetails["author"]))
             correctBook = raw_input("would you like to continue? [yes]/no/next/search/manual/modify: ")
             if correctBook == "next":
                 bookIndex += 1
