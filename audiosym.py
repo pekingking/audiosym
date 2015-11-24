@@ -27,6 +27,8 @@ class audiosym():
         while True:
             bookDetails = self.getBookInfo(bookTitle, bookIndex)
             print "Found {} by {} released on {}".format(bookDetails["title"], bookDetails["author"], bookDetails["date"])
+            if bookDetails["series"] and bookDetails["seriesNumber"]:
+                print "Book {} in {}".format(bookDetails["series"], bookDetails["seriesNumber"])
             print "https://www.goodreads.com/book/show/{}".format(bookDetails["goodreadsID"])
             print "Folder would look like {}:{}".format(self.cleanTitle(bookDetails["title"]), self.cleanTitle(bookDetails["author"]))
             correctBook = raw_input("would you like to continue? [yes]/no/next/search/manual/modify: ")
@@ -218,6 +220,8 @@ class audiosym():
             bookDetails = dict()
             bookDetails["title"] = "NOT FOUND"
             bookDetails["author"] = "NOT FOUND"
+            bookDetails["series"] = ""
+            bookDetails["seriesNumber"] = ""
             bookDetails["goodreadsID"] = "0"
             bookDetails["date"] = ""
             if "results" in info and info["results"] and "richSnippet" in info["results"][0] and "person" in info["results"][0]["richSnippet"] and "name" in info["results"][0]["richSnippet"]["person"]:
@@ -226,6 +230,10 @@ class audiosym():
                 print "no author found"
             if "results" in info and info["results"] and "richSnippet" in info["results"][0] and "book" in info["results"][0]["richSnippet"] and "name" in info["results"][0]["richSnippet"]["book"]:
                 bookDetails["title"] = info["results"][0]["richSnippet"]["book"]["name"]
+                series = re.search("\(([^(]+)\s+#([^#(]+)\)$", bookDetails["title"])
+                if series:
+                    bookDetails["series"] = series.group(1)
+                    bookDetails["seriesNumber"] = series.group(2)
             else:
                 print "no title found"
             if "results" in info and info["results"] and "content" in info["results"][0]:
