@@ -1,71 +1,76 @@
 <?php
-header('Content-Type: application/xml; charset=utf-8');
-// CONFIGURE THESE VARIABLES:
-$https_enabled = '';
-if( isset($_SERVER['HTTPS'] ) ) {
-   $https_enabled = 's';
-}
+if(isset($_GET["feed"])){
 
-// actual place where your mp3s live on your server's filesystem. TRAILING SLASH REQ'D.
-$bookDirectory=getcwd();
-//echo $bookDirectory;
-// corresponding web URL for accessing the book directory. TRAILING SLASH REQ'D.
-$bookURL='http'.$https_enabled.'://'.$_SERVER['SERVER_NAME'].preg_replace('/\/[^\/]+\.[^\/]+$/', '/', $_SERVER['REQUEST_URI']);
-//echo $bookURL;
-// name your feed
-$feedTitle=basename($bookDirectory);
-//echo $feedTitle;
-// where every entry in your feed will link to, sort of like a "for more info" link
-$feedLink='http'.$https_enabled.'://'.$_SERVER['SERVER_NAME'].preg_replace('/\/[^\/]+\.[^\/]+$/', '/', $_SERVER['REQUEST_URI']);
-//echo feedLink;
-// describe your feed
-$feedDescription="AudioBook";
-//echo feedDescription;
-// outline your copyright / creative commons / licensing terms
-$feedCopyright="Who Knows";
-
-// your email... if you dare!
-$authorEmail="myemail@mywebsite.com";
-
-// how often should feed readers check for new material (in seconds) -- mostly ignored by readers.
-$ttl = 9999;
-
-// END OF STUFF YOU NEED TO CONFIGURE!
-
-echo '<?xml version="1.0" encoding="utf-8"?>'."\r\n";
-echo '<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">'."\r\n";
-echo "  <channel>\r\n";
-echo '    <atom:link href="' . $feedLink . '" rel="self" type="application/rss+xml" />'."\r\n";
-echo "    <title>$feedTitle</title>\r\n";
-echo "    <link>$feedLink</link>\r\n";
-echo "    <description>$feedDescription</description>\r\n";
-echo "    <language>en</language>\r\n";
-echo "    <copyright>$feedCopyright</copyright>\r\n";
-echo "    <ttl>$ttl</ttl>\r\n";
-echo "    <image>\r\n";
-echo "        <title>$feedTitle</title>\r\n";
-echo "        <url>".$bookURL."folder.jpg</url>\r\n";
-echo "        <link>$feedLink</link>\r\n";
-echo "    </image>\r\n";
-// step through each item...
-    $files = scandir(getcwd(), 1);
-    foreach ($files as $thisFile)
-    {
-        $thisFilePath = $bookDirectory ."/". $thisFile;
-            if (preg_match("/\.(mp3|m4b|m4a|acc)$/i", $thisFilePath)) //(is_file($thisFilePath) && strrchr ($thisFilePath, '.') == ".mp3") // not . or .., ends in .mp3
-            {
-                    $myFullURL=$bookURL . $thisFile;
-            $fileLength = trim(shell_exec('~/bin/ffmpeg -i "'.$thisFilePath.'" 2>&1 | grep Duration | '."sed 's/Duration: \(.*\), start/\\1/g' | grep -iEo ".'"[0-9][0-9]:[0-9][0-9]:[0-9][0-9]"'."  | awk -F: '{ print ($1 * 3600) + ($2 * 60) + $3 }'"));
-            echo "    <item>\r\n";
-                echo "        <title>$thisFile</title>\r\n";
-                echo "        <link>$feedLink</link>\r\n";
-                echo "        <description>$thisFile</description>\r\n";
-                echo '        <enclosure url="'.$myFullURL.'" length="'.$fileLength.'" type="audio/mpeg" />'."\r\n";
-                echo "        <guid>$myFullURL</guid>\r\n";
-                echo "    </item>\r\n";
-            }
+    header('Content-Type: application/xml; charset=utf-8');
+    // CONFIGURE THESE VARIABLES:
+    $https_enabled = '';
+    if( isset($_SERVER['HTTPS'] ) ) {
+       $https_enabled = 's';
     }
-    closedir($fileDir);
+
+    // actual place where your mp3s live on your server's filesystem. TRAILING SLASH REQ'D.
+    $bookDirectory=getcwd();
+    //echo $bookDirectory;
+    // corresponding web URL for accessing the book directory. TRAILING SLASH REQ'D.
+    $bookURL='http'.$https_enabled.'://'.$_SERVER['SERVER_NAME'].preg_replace('/\/[^\/]+\.[^\/]+$/', '/', $_SERVER['REQUEST_URI']);
+    //echo $bookURL;
+    // name your feed
+    $feedTitle=basename($bookDirectory);
+    //echo $feedTitle;
+    // where every entry in your feed will link to, sort of like a "for more info" link
+    $feedLink='http'.$https_enabled.'://'.$_SERVER['SERVER_NAME'].preg_replace('/\/[^\/]+\.[^\/]+$/', '/', $_SERVER['REQUEST_URI']);
+    //echo feedLink;
+    // describe your feed
+    $feedDescription="AudioBook";
+    //echo feedDescription;
+    // outline your copyright / creative commons / licensing terms
+    $feedCopyright="Who Knows";
+
+    // your email... if you dare!
+    $authorEmail="myemail@mywebsite.com";
+
+    // how often should feed readers check for new material (in seconds) -- mostly ignored by readers.
+    $ttl = 9999;
+
+    // END OF STUFF YOU NEED TO CONFIGURE!
+
+    echo '<?xml version="1.0" encoding="utf-8"?>'."\r\n";
+    echo '<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">'."\r\n";
+    echo "  <channel>\r\n";
+    echo '    <atom:link href="' . $feedLink . '" rel="self" type="application/rss+xml" />'."\r\n";
+    echo "    <title>$feedTitle</title>\r\n";
+    echo "    <link>$feedLink</link>\r\n";
+    echo "    <description>$feedDescription</description>\r\n";
+    echo "    <language>en</language>\r\n";
+    echo "    <copyright>$feedCopyright</copyright>\r\n";
+    echo "    <ttl>$ttl</ttl>\r\n";
+    echo "    <image>\r\n";
+    echo "        <title>$feedTitle</title>\r\n";
+    echo "        <url>".$bookURL."folder.jpg</url>\r\n";
+    echo "        <link>$feedLink</link>\r\n";
+    echo "    </image>\r\n";
+    // step through each item...
+        $files = scandir(getcwd(), 1);
+        foreach ($files as $thisFile)
+        {
+            $thisFilePath = $bookDirectory ."/". $thisFile;
+                if (preg_match("/\.(mp3|m4b|m4a|acc)$/i", $thisFilePath)) //(is_file($thisFilePath) && strrchr ($thisFilePath, '.') == ".mp3") // not . or .., ends in .mp3
+                {
+                        $myFullURL=$bookURL . $thisFile;
+                $fileLength = trim(shell_exec('~/bin/ffmpeg -i "'.$thisFilePath.'" 2>&1 | grep Duration | '."sed 's/Duration: \(.*\), start/\\1/g' | grep -iEo ".'"[0-9][0-9]:[0-9][0-9]:[0-9][0-9]"'."  | awk -F: '{ print ($1 * 3600) + ($2 * 60) + $3 }'"));
+                echo "    <item>\r\n";
+                    echo "        <title>$thisFile</title>\r\n";
+                    echo "        <link>$feedLink</link>\r\n";
+                    echo "        <description>$thisFile</description>\r\n";
+                    echo '        <enclosure url="'.$myFullURL.'" length="'.$fileLength.'" type="audio/mpeg" />'."\r\n";
+                    echo "        <guid>$myFullURL</guid>\r\n";
+                    echo "    </item>\r\n";
+                }
+        }
+        closedir($fileDir);
+    echo "  </channel>\r\n";
+    echo "</rss>\r\n";
+} else {
+    echo "test";
+}
 ?>
-  </channel>
-</rss>
