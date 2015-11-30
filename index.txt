@@ -11,7 +11,7 @@
     $bookDirectory=getcwd();
     //echo $bookDirectory;
     // corresponding web URL for accessing the book directory. TRAILING SLASH REQ'D.
-    $bookURL='http'.$https_enabled.'://'.$_SERVER['SERVER_NAME'].preg_replace('/\/[^\/]+\.[^\/]+$/', '/', $_SERVER['PATH_INFO']);
+    $bookURL='http'.$https_enabled.'://'.$_SERVER['SERVER_NAME'].preg_replace('/^([^?]+?)\/?\?.*/', '$1/', $_SERVER['REQUEST_URI']);
     //echo $bookURL;
     // name your feed
     $feedTitle=basename($bookDirectory);
